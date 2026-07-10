@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HVA Open Studios">
-<link rel="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<link class="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
 <link rel="icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
 <style>
   html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
@@ -71,7 +71,7 @@
   #routeCard button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12.5px;cursor:pointer;font-weight:500;}
   #routeCard .appleBtn{background:linear-gradient(to bottom, #555555, #333333);color:#fff;}
   #routeCard .googleBtn{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#fff;}
-  #routeCard .resetBtn{background:linear-gradient(to bottom, #ffffff, #eee);color:#333;border-color:#ccc !important;text-shadow:none;}
+  #routeCard .resetBtn{background:linear-gradient(to bottom, #ffffff, #eee);color:#33;border-color:#ccc !important;text-shadow:none;}
   #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
   #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11.5px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
@@ -153,7 +153,7 @@
 <div id="listPanel">
   <button id="listClose">✕</button>
   <h2 id="listTitle">All Artists</h2>
-  <div id="listBannerInstruction">Tap '+ Route' on any two open artists to map the exact route between their studios.</div>
+  <div id="listBannerInstruction">Tap anywhere on an artist's row to map your route. Selecting two automatically generates directions.</div>
   <div id="listCols">
     <div class="listCol">
       <div class="listColHead openHead">Open Today</div>
@@ -310,6 +310,11 @@ function toggleRouteVenue(loc) {
   
   renderMap();
   showRouteCard();
+  
+  /* Auto-reveal map view when two selections are locked in */
+  if(routePicks.length === 2 && isListPanelOpen) {
+    closeListPanel();
+  }
 }
 
 function buildDateBar(){
@@ -369,31 +374,31 @@ function buildListView(){
         const activeClass = isPicked ? 'listRouteBtn activeRoute' : 'listRouteBtn';
         
         row.innerHTML = `
-          <div class="listRowContent">
+          <div class="listRowContent" style="cursor: pointer;">
             <span class="listDot" style="background:${loc.present ? '#2c6fbd' : '#2e8b3d'}"></span>
             <span><span class="lname">${artist}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} · ${hrs}</span></span>
           </div>
           <button class="${activeClass}">${routeBtnText}</button>
         `;
         
-        row.querySelector('.listRowContent').onclick = ()=>{ closeListPanel(); openPanel(loc); };
-        row.querySelector('.listRouteBtn').onclick = (e)=>{
-          e.stopPropagation();
+        // Tapping the row directly activates routing/bubbling up instead of throwing a popup
+        row.onclick = (e)=>{
           toggleRouteVenue(loc);
-          buildListView();
+          if (routePicks.length < 2) buildListView();
         };
+        
         openCol.appendChild(row);
       });
     } else {
       const allArtists = new Set();
       Object.values(loc.days).forEach(d=>Object.keys(d).forEach(n=>allArtists.add(n)));
       row.innerHTML = `
-        <div class="listRowContent" style="flex:1;">
+        <div class="listRowContent" style="flex:1; cursor: pointer;">
           <span class="listDot" style="background:#777777"></span>
           <span><span class="lname">${[...allArtists].join(', ')}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode}</span></span>
         </div>
       `;
-      row.querySelector('.listRowContent').onclick = ()=>{ closeListPanel(); openPanel(loc); };
+      row.onclick = ()=>{ closeListPanel(); openPanel(loc); };
       closedCol.appendChild(row);
     }
   });
