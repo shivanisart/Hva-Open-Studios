@@ -122,8 +122,7 @@
     <div id="instructions">
       1. Choose visit date below  · 
       2. 🟢 Green = Open  · 
-      3. 🔵 Blue = Artist Present  · 
-      4. Studio-to-Studio Directions
+      3. 🔵 Blue = Artist Present
     </div>
     <div id="dateBar"></div>
     <div id="modeRow">
@@ -276,7 +275,6 @@ function showRouteCard(){
     </div>`;
   card.classList.add('show');
   
-  /* Bug Fix: Ensure hitting reset downsized/de-highlighted the master header tracking button */
   document.getElementById('routeReset').onclick = ()=>{ 
     routePicks=[]; 
     directionsMode = false;
