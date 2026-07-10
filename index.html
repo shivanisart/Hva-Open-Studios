@@ -19,7 +19,7 @@
   #brandRow{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
   #brandRow img{height:28px;width:auto;border-radius:4px;background:#fff;padding:2px;}
   header h1{margin:0;font-size:15px;font-weight:600;line-height:1.3;color:#ffffff !important;}
-  #instructions{font-size:11.5px;line-height:1.5;color:#eaeaea !important;margin-bottom:8px;}
+  #instructions{font-size:13px;font-weight:500;color:#eaeaea !important;margin-bottom:8px;}
   
   /* Navigation & Controls */
   #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
@@ -27,13 +27,13 @@
   #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
   
   /* Accessible 3D Button Enhancements */
-  .dateBtn, #listToggle, .mapNavBtn, .loveBtn, .sendNoteBtn {
+  .dateBtn, #listToggle, .mapNavBtn, .loveBtn, .sendNoteBtn, .visitBtn {
     box-shadow: 0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);
     border: 1px solid #222222 !important;
     text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
   }
-  .dateBtn:active, #listToggle:active, .mapNavBtn:active, .loveBtn:active, .sendNoteBtn:active {
+  .dateBtn:active, #listToggle:active, .mapNavBtn:active, .loveBtn:active, .sendNoteBtn:active, .visitBtn:active {
     transform: translateY(1px);
     box-shadow: 0 1px 0px rgba(0,0,0,0.2);
   }
@@ -73,10 +73,11 @@
   .pin.open { background: #2e8b3d; }
   .pin.present { background: #2c6fbd; }
   .pin.closed { background: #777777; }
+  .pin.visitedState { background: #6f42c1 !important; }
   .pin.picked { transform: translate(-50%, -50%) scale(1.2); outline: 1.5px solid #333333; outline-offset: 1px; z-index: 1000 !important; }
   
   #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
-  #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11.5px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;}
+  #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;line-height:1.6;}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
   
   /* Pop-up Info Panel */
@@ -89,15 +90,30 @@
   .artistRow .hrs{color:#2e8b3d;font-weight:600;}
   .closedMsg{color:#888;font-style:italic;font-size:14px;padding:4px 0;}
   
-  /* Current Location Navigation Row */
+  /* Mandatory Gateway Screen Overlay */
+  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #loginOverlay.hide{display:none;}
+  #loginBox{background:#ffffff;border-radius:12px;padding:26px;width:100%;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;}
+  #loginBox img{height:45px;width:auto;margin-bottom:12px;}
+  #loginBox h2{margin:0 0 8px 0;font-size:18px;color:#333;}
+  #loginBox p{font-size:13px;color:#666;line-height:1.5;margin:0 0 16px 0;}
+  #loginBox input[type="email"]{width:100%;padding:11px;border:1px solid #bbb;border-radius:6px;font-size:14px;box-sizing:border-box;margin-bottom:14px;text-align:center;}
+  #loginBox button.primaryStartBtn{width:100%;padding:12px;background:linear-gradient(to bottom, #2e8b3d, #246e30);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;}
+
+  /* Core Direction Routing Elements */
   .routingSection {margin-top:12px; padding:10px 0; border-top:1px dashed #ddd;}
   .routingTitle {font-size:12px; font-weight:700; margin-bottom:6px; color:#555;}
   .routingRow {display:flex; gap:8px;}
-  .mapNavBtn {flex:1; border:none; border-radius:6px; padding:8px; font-size:12px; cursor:pointer; font-weight:600; text-align:center; color:#fff;}
+  .mapNavBtn {border:none; border-radius:6px; padding:6px 10px; font-size:11px; cursor:pointer; font-weight:600; text-align:center; color:#fff;}
   .mapNavBtn.apple {background:linear-gradient(to bottom, #555555, #333333);}
   .mapNavBtn.google {background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);}
 
-  /* Feedback Containers */
+  /* Visited Checkmark Controls */
+  .visitActionContainer{margin-top:12px;padding-top:10px;border-top:1px solid #eee;display:flex;}
+  .visitBtn{background:linear-gradient(to bottom, #6f42c1, #5a32a3);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;}
+  .visitBtn.isVisited{background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
+
+  /* Feedback Interactions */
   .feedbackSection {margin-top:12px;padding-top:12px;border-top:1px solid #eee;}
   .feedbackRow {display:flex;gap:8px;margin-bottom:8px;}
   .loveBtn {background:linear-gradient(to bottom, #ff5a5f, #e04a4f);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
@@ -114,21 +130,35 @@
   #listPanel h2{margin:6px 0 2px 0;font-size:17px;color:#333333;}
   #listBannerInstruction{font-size:12px;color:#666;margin-bottom:14px;font-style:italic;background:#f3f7fa;padding:6px 10px;border-radius:6px;border-left:3px solid #4a7fb5;}
   #listClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
-  #listCols{display:flex;gap:12px;}
-  .listCol{flex:1;min-width:0;}
+  #listCols{display:flex;gap:12px;flex-direction:column;}
+  .listCol{width:100%;min-width:0;}
   .listColHead{font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;margin-bottom:10px;color:#ffffff;}
   .openHead{background:#2e8b3d;}
   .closedHead{background:#777777;}
-  .listRow{display:flex;align-items:center;justify-content:between;gap:8px;padding:8px 4px;border-bottom:1px solid #eee;font-size:13px;}
+  
+  .listRow{padding:10px 4px;border-bottom:1px solid #eee;}
+  .listRowMainInfo{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .listRowContent{display:flex;align-items:flex-start;gap:8px;cursor:pointer;flex:1;min-width:0;}
   .listDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:4px;}
-  .listRow .lname{font-weight:600;display:block;color:#333333;}
-  .listRow .lmeta{color:#666;font-size:11px;margin-top:2px;}
+  .listRow .lname{font-weight:600;display:block;color:#333333;font-size:14px;}
+  .listRow .lmeta{color:#666;font-size:12px;margin-top:2px;}
+  .listRowActions {display:flex; gap:6px; margin-top:8px; padding-left:17px;}
 
   footer {background: #222222; color: #aaaaaa; text-align: center; font-size: 11px; padding: 6px 10px; flex: 0 0 auto; border-top: 1px solid #333333;}
 </style>
 </head>
 <body>
+
+<!-- Mandatory Access Gateway Layer -->
+<div id="loginOverlay">
+  <div id="loginBox">
+    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA Logo">
+    <h2>Welcome to the Trail!</h2>
+    <p>Please enter your email address to launch the interactive trail map and start exploring.</p>
+    <input type="email" id="userEmail" placeholder="Enter email address" required>
+    <button class="primaryStartBtn" id="loginSubmitBtn">Start the open studio trail</button>
+  </div>
+</div>
 
 <div id="app">
   <header>
@@ -137,21 +167,20 @@
       <h1 id="headline">Open Studio Trail — St Albans<br>5th to 27th September 2026</h1>
     </div>
     <div id="instructions">
-      1. Choose visit date  · 
-      2. 🟢 Green = Open  · 
-      3. 🔵 Blue = Open+Artist Present
+      Choose the date to see what's open:
     </div>
     <div id="dateBar"></div>
     <div id="modeRow">
-      <button id="listToggle">📋 View Artist List</button>
+      <button id="listToggle">📋 All Artists List</button>
     </div>
   </header>
   <div id="mapWrap">
     <div id="mapCanvas"></div>
     <div id="compass">N ↑</div>
     <div id="legend">
-      <span class="dot" style="background:#2e8b3d;"></span>Open   
-      <span class="dot" style="background:#2c6fbd;"></span>Artist present   
+      <span class="dot" style="background:#2e8b3d;"></span>Studio Open <br>
+      <span class="dot" style="background:#2c6fbd;"></span>Studio Open + Artist Present <br>
+      <span class="dot" style="background:#6f42c1;"></span>Studio Visited <br>
       <span class="dot" style="background:#777777;"></span>Closed
     </div>
   </div>
@@ -167,7 +196,7 @@
 <div id="listPanel">
   <button id="listClose">✕</button>
   <h2 id="listTitle">All Artists</h2>
-  <div id="listBannerInstruction">Tap any artist below to instantly see their details and map custom travel directions from your current location.</div>
+  <div id="listBannerInstruction">Tap any profile to view details, leave a note, or click a route button to launch directions immediately.</div>
   <div id="listCols">
     <div class="listCol">
       <div class="listColHead openHead">Open Today</div>
@@ -230,6 +259,7 @@ const DATES = Array.from({length:23}, (_,i)=>i+5);
 let selectedDate = 5;
 let isListPanelOpen = false; 
 let activeSelectedVenue = null;
+let visitedVenues = [];
 
 let lovedStudios = {}; 
 let studioNotes = {};  
@@ -247,15 +277,35 @@ function ordinal(n){
   }
 }
 
+// ---- MANDATORY ACCESS PORTAL ENGINE -----------------------------------
+document.getElementById('loginSubmitBtn').onclick = () => {
+  const emailInput = document.getElementById('userEmail').value.trim();
+  if(emailInput && emailInput.includes('@')) {
+    document.getElementById('loginOverlay').classList.add('hide');
+  } else {
+    alert("Please enter a valid email address to start the open studio trail.");
+  }
+};
+
 function handlePinTap(loc){
   activeSelectedVenue = loc.venue;
   openPanel(loc);
   renderMap();
 }
 
+function toggleVisitedVenue(venueNum) {
+  const idx = visitedVenues.indexOf(venueNum);
+  if (idx > -1) {
+    visitedVenues.splice(idx, 1);
+  } else {
+    visitedVenues.push(venueNum);
+  }
+  renderMap();
+}
+
 function sendStudioAppreciation(venueNum) {
   lovedStudios[venueNum] = true;
-  alert("Awesome! We've sent your appreciation to the artist. ❤️");
+  alert("Awesome! We've registered your love for this artist. ❤️");
 }
 
 function submitStudioNote(venueNum, message) {
@@ -283,6 +333,13 @@ function refreshDateBar(){
   });
 }
 
+function getDirectionsUrls(postcode) {
+  return {
+    apple: `https://maps.apple.com/?saddr=Current+Location&daddr=${encodeURIComponent(postcode)}&dirflg=d`,
+    google: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(postcode)}`
+  };
+}
+
 function openPanel(loc){
   const body = document.getElementById('panelBody');
   const openToday = loc.days[selectedDate];
@@ -296,17 +353,22 @@ function openPanel(loc){
     html += `<div class="closedMsg">Closed on ${ordinal(selectedDate)} September.</div>`;
   }
   
-  // Real-time Current Location maps injection configurations
-  const appleUrl = `https://maps.apple.com/?saddr=Current+Location&daddr=${encodeURIComponent(loc.postcode)}&dirflg=d`;
-  const googleUrl = `https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=${encodeURIComponent(loc.postcode)}`;
+  const urls = getDirectionsUrls(loc.postcode);
+  const isVisited = visitedVenues.includes(loc.venue);
   
   html += `
     <div class="routingSection">
-      <div class="routingTitle">Get Directions From Your Current Location:</div>
+      <div class="routingTitle">Directions From Your Location / Route to Here:</div>
       <div class="routingRow">
-        <button class="mapNavBtn apple" onclick="window.open('${appleUrl}','_blank')"> Open Apple Maps</button>
-        <button class="mapNavBtn google" onclick="window.open('${googleUrl}','_blank')">🗺️ Open Google Maps</button>
+        <button class="mapNavBtn apple" onclick="window.open('${urls.apple}','_blank')"> Apple Maps Route</button>
+        <button class="mapNavBtn google" onclick="window.open('${urls.google}','_blank')">🗺️ Google Maps Route</button>
       </div>
+    </div>
+
+    <div class="visitActionContainer">
+      <button class="visitBtn ${isVisited ? 'isVisited' : ''}" id="toggleVisitAction">
+        ${isVisited ? '✓ Studio Visited' : 'Mark as Visited'}
+      </button>
     </div>
     
     <div class="feedbackSection">
@@ -323,6 +385,11 @@ function openPanel(loc){
   body.innerHTML = html;
   document.getElementById('panel').classList.add('show');
   document.getElementById('scrim').classList.add('show');
+  
+  document.getElementById('toggleVisitAction').onclick = () => {
+    toggleVisitedVenue(loc.venue);
+    openPanel(loc); 
+  };
   
   document.getElementById('loveActionBtn').onclick = () => {
     if(lovedStudios[loc.venue]) return;
@@ -357,27 +424,42 @@ function buildListView(){
     const row = document.createElement('div');
     row.className = 'listRow';
     
+    const urls = getDirectionsUrls(loc.postcode);
+    const isVisited = visitedVenues.includes(loc.venue);
+    
     if(today){
       Object.entries(today).forEach(([artist,hrs])=>{
         row.innerHTML = `
-          <div class="listRowContent" style="cursor: pointer; width: 100%;">
-            <span class="listDot" style="background:${loc.present ? '#2c6fbd' : '#2e8b3d'}"></span>
-            <span><span class="lname">${artist}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} · ${hrs}</span></span>
+          <div class="listRowMainInfo">
+            <div class="listRowContent">
+              <span class="listDot" style="background:${isVisited ? '#6f42c1' : (loc.present ? '#2c6fbd' : '#2e8b3d')}"></span>
+              <span><span class="lname">${artist}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} · ${hrs}</span></span>
+            </div>
+          </div>
+          <div class="listRowActions">
+            <button class="mapNavBtn apple" onclick="event.stopPropagation(); window.open('${urls.apple}','_blank')"> Route</button>
+            <button class="mapNavBtn google" onclick="event.stopPropagation(); window.open('${urls.google}','_blank')">🗺️ Route</button>
           </div>
         `;
-        row.onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
+        row.querySelector('.listRowContent').onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
         openCol.appendChild(row);
       });
     } else {
       const allArtists = new Set();
       Object.values(loc.days).forEach(d=>Object.keys(d).forEach(n=>allArtists.add(n)));
       row.innerHTML = `
-        <div class="listRowContent" style="flex:1; cursor: pointer;">
-          <span class="listDot" style="background:#777777"></span>
-          <span><span class="lname">${[...allArtists].join(', ')}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode}</span></span>
+        <div class="listRowMainInfo">
+          <div class="listRowContent" style="flex:1;">
+            <span class="listDot" style="background:${isVisited ? '#6f42c1' : '#777777'}"></span>
+            <span><span class="lname">${[...allArtists].join(', ')}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} (Closed Today)</span></span>
+          </div>
+        </div>
+        <div class="listRowActions">
+          <button class="mapNavBtn apple" onclick="event.stopPropagation(); window.open('${urls.apple}','_blank')"> Route</button>
+          <button class="mapNavBtn google" onclick="event.stopPropagation(); window.open('${urls.google}','_blank')">🗺️ Route</button>
         </div>
       `;
-      row.onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
+      row.querySelector('.listRowContent').onclick = () => { closeListPanel(); handlePinTap(loc); };
       closedCol.appendChild(row);
     }
   });
@@ -433,19 +515,23 @@ function renderMap(){
     const posKey = `${Math.round(x)},${Math.round(y)}`;
     if (computedPositions[posKey]) {
       computedPositions[posKey]++;
-      x += (computedPositions[posKey * 5]) - 5;
+      x += (computedPositions[posKey] * 5) - 5;
     } else {
       computedPositions[posKey] = 1;
     }
 
     const isPicked = (activeSelectedVenue === loc.venue);
-    let stateClass = openToday ? (loc.present ? 'present' : 'open') : 'closed';
+    const isVisited = visitedVenues.includes(loc.venue);
+    
+    let stateClass = 'closed';
+    if(openToday) stateClass = loc.present ? 'present' : 'open';
+    if(isVisited) stateClass = 'visitedState';
     
     const pin = document.createElement('div');
     pin.className = 'pin ' + stateClass + (isPicked ? ' picked' : '');
     pin.style.left = x+'px'; pin.style.top = y+'px';
     pin.style.zIndex = 100 + index;
-    pin.textContent = loc.venue;
+    pin.textContent = isVisited ? '✓' : loc.venue;
     
     pin.onclick = ()=>handlePinTap(loc);
     canvas.appendChild(pin);
