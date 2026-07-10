@@ -27,13 +27,13 @@
   #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
   
   /* Accessible 3D Button Enhancements */
-  .dateBtn, #listToggle, #dirToggle, .listRouteBtn, #routeCard button, .visitBtn, #loginBox button, .loveBtn, .sendNoteBtn {
+  .dateBtn, #listToggle, .mapNavBtn, .loveBtn, .sendNoteBtn {
     box-shadow: 0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);
     border: 1px solid #222222 !important;
     text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
   }
-  .dateBtn:active, #listToggle:active, #dirToggle:active, .listRouteBtn:active, .visitBtn:active, .loveBtn:active, .sendNoteBtn:active {
+  .dateBtn:active, #listToggle:active, .mapNavBtn:active, .loveBtn:active, .sendNoteBtn:active {
     transform: translateY(1px);
     box-shadow: 0 1px 0px rgba(0,0,0,0.2);
   }
@@ -43,9 +43,7 @@
   .dateBtn.noOpenings{opacity:0.4;}
   
   #modeRow{display:flex;gap:8px;align-items:center;margin-top:6px;}
-  #listToggle, #dirToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;font-weight:500;}
-  #dirToggle.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
-  #dirHint{color:#eaeaea;font-size:11.5px;}
+  #listToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;font-weight:500;}
   
   /* Map layout */
   #mapWrap{flex:1 1 auto;position:relative;overflow:hidden;background:#929292;}
@@ -75,17 +73,8 @@
   .pin.open { background: #2e8b3d; }
   .pin.present { background: #2c6fbd; }
   .pin.closed { background: #777777; }
-  .pin.visitedState { background: #6f42c1 !important; opacity: 0.75; }
-  .pin.picked { transform: translate(-50%, -50%) scale(1.3); outline: 1.5px solid #333333; outline-offset: 1px; z-index: 1000 !important; }
+  .pin.picked { transform: translate(-50%, -50%) scale(1.2); outline: 1.5px solid #333333; outline-offset: 1px; z-index: 1000 !important; }
   
-  #routeCard{position:absolute;top:12px;left:12px;right:12px;background:rgba(255,255,255,0.96);border-radius:8px;padding:12px;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:60;display:none;color:#333333;}
-  #routeCard.show{display:block;}
-  #routeCard .rTitle{font-weight:700;margin-bottom:6px;}
-  #routeCard .rBtns{display:flex;gap:8px;margin-top:8px;}
-  #routeCard button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12.5px;cursor:pointer;font-weight:500;}
-  #routeCard .appleBtn{background:linear-gradient(to bottom, #555555, #333333);color:#fff;}
-  #routeCard .googleBtn{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#fff;}
-  #routeCard .resetBtn{background:linear-gradient(to bottom, #ffffff, #eee);color:#333;border-color:#ccc !important;text-shadow:none;}
   #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
   #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11.5px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
@@ -100,13 +89,16 @@
   .artistRow .hrs{color:#2e8b3d;font-weight:600;}
   .closedMsg{color:#888;font-style:italic;font-size:14px;padding:4px 0;}
   
-  /* Action Bars & Interactive Feedback Containers */
-  .visitActionContainer{margin-top:14px;padding-top:12px;border-top:1px dashed #ddd;display:flex;justify-content:space-between;align-items:center;gap:10px;}
-  .visitBtn{background:linear-gradient(to bottom, #6f42c1, #5a32a3);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:12.5px;cursor:pointer;font-weight:600;}
-  .visitBtn.isVisited{background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
-  
-  .feedbackSection {margin-top:14px;padding-top:12px;border-top:1px solid #eee;}
-  .feedbackSection h3 {margin:0 0 6px 0;font-size:13px;font-weight:700;color:#444;}
+  /* Current Location Navigation Row */
+  .routingSection {margin-top:12px; padding:10px 0; border-top:1px dashed #ddd;}
+  .routingTitle {font-size:12px; font-weight:700; margin-bottom:6px; color:#555;}
+  .routingRow {display:flex; gap:8px;}
+  .mapNavBtn {flex:1; border:none; border-radius:6px; padding:8px; font-size:12px; cursor:pointer; font-weight:600; text-align:center; color:#fff;}
+  .mapNavBtn.apple {background:linear-gradient(to bottom, #555555, #333333);}
+  .mapNavBtn.google {background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);}
+
+  /* Feedback Containers */
+  .feedbackSection {margin-top:12px;padding-top:12px;border-top:1px solid #eee;}
   .feedbackRow {display:flex;gap:8px;margin-bottom:8px;}
   .loveBtn {background:linear-gradient(to bottom, #ff5a5f, #e04a4f);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
   .loveBtn.loved {background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
@@ -115,18 +107,6 @@
 
   #scrim{position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:15;}
   #scrim.show{opacity:1;pointer-events:auto;}
-  
-  /* Welcome Portal Overhaul Screen */
-  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
-  #loginOverlay.hide{display:none;}
-  #loginBox{background:#ffffff;border-radius:12px;padding:24px;width:100%;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;}
-  #loginBox img{height:45px;width:auto;margin-bottom:12px;}
-  #loginBox h2{margin:0 0 8px 0;font-size:18px;color:#333;}
-  #loginBox p{font-size:13px;color:#666;line-height:1.5;margin:0 0 16px 0;}
-  #loginBox input[type="email"]{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:14px;box-sizing:border-box;margin-bottom:14px;text-align:center;}
-  #loginBox button.primaryStartBtn{width:100%;padding:11px;background:linear-gradient(to bottom, #2e8b3d, #246e30);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;}
-  #loginBox .skipDividerText{font-size:13px;color:#666;line-height:1.5;margin:14px 0 12px 0;padding-top:12px;border-top:1px dashed #ddd;}
-  #loginBox button.secondarySkipBtn{width:100%;padding:11px;background:linear-gradient(to bottom, #f5f5f5, #e6e6e6);color:#555;border:1px solid #cccccc !important;text-shadow:none !important;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;}
 
   /* Master List Interface */
   #listPanel{position:fixed;left:0;right:0;bottom:0;top:8%;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.25);padding:16px 14px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:25;overflow-y:auto;color:#333333;}
@@ -144,26 +124,11 @@
   .listDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:4px;}
   .listRow .lname{font-weight:600;display:block;color:#333333;}
   .listRow .lmeta{color:#666;font-size:11px;margin-top:2px;}
-  
-  .listRouteBtn{flex:0 0 auto;background:linear-gradient(to bottom, #ffffff, #e6e6e6);border:1px solid #cccccc !important;padding:5px 9px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:600;color:#333333;box-shadow: 0 1.5px 0px rgba(0,0,0,0.15);}
-  .listRouteBtn.activeRoute{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#ffffff;border-color:#386390 !important;}
 
   footer {background: #222222; color: #aaaaaa; text-align: center; font-size: 11px; padding: 6px 10px; flex: 0 0 auto; border-top: 1px solid #333333;}
 </style>
 </head>
 <body>
-<!-- System Onboarding Gateway -->
-<div id="loginOverlay">
-  <div id="loginBox">
-    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA Logo">
-    <h2>Welcome to the Trail!</h2>
-    <p>Enter your email to automatically save your progress as you explore.</p>
-    <input type="email" id="userEmail" placeholder="your.name@example.com">
-    <button class="primaryStartBtn" id="loginSubmitBtn">Start Trail & Track Visits</button>
-    <div class="skipDividerText">You can also start without an email, but you will not be able to keep a record of what you have visited.</div>
-    <button class="secondarySkipBtn" id="loginSkipBtn">Start Trail Without Tracking</button>
-  </div>
-</div>
 
 <div id="app">
   <header>
@@ -178,19 +143,15 @@
     </div>
     <div id="dateBar"></div>
     <div id="modeRow">
-      <button id="listToggle">📋 All Artists</button>
-      <button id="dirToggle">Studio-to-Studio Directions</button>
-      <span id="dirHint"></span>
+      <button id="listToggle">📋 View Artist List</button>
     </div>
   </header>
   <div id="mapWrap">
     <div id="mapCanvas"></div>
     <div id="compass">N ↑</div>
-    <div id="routeCard"></div>
     <div id="legend">
       <span class="dot" style="background:#2e8b3d;"></span>Open   
       <span class="dot" style="background:#2c6fbd;"></span>Artist present   
-      <span class="dot" style="background:#6f42c1;"></span>Visited   
       <span class="dot" style="background:#777777;"></span>Closed
     </div>
   </div>
@@ -206,7 +167,7 @@
 <div id="listPanel">
   <button id="listClose">✕</button>
   <h2 id="listTitle">All Artists</h2>
-  <div id="listBannerInstruction">Tap anywhere on an artist's row to map your route. Selecting two automatically generates directions.</div>
+  <div id="listBannerInstruction">Tap any artist below to instantly see their details and map custom travel directions from your current location.</div>
   <div id="listCols">
     <div class="listCol">
       <div class="listColHead openHead">Open Today</div>
@@ -220,7 +181,7 @@
 </div>
 
 <script>
-// ---- TRAIL INFRASTRUCTURE COMPONENT DATA ARRAY -----------------------
+// ---- TRAIL DATA ARCHITECTURE -----------------------
 const locations = [
   { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
   { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
@@ -267,15 +228,9 @@ const LANDMARKS = [
 const LAT_MIN=51.700, LAT_MAX=51.790, LNG_MIN=-0.400, LNG_MAX=-0.240;
 const DATES = Array.from({length:23}, (_,i)=>i+5);
 let selectedDate = 5;
-let directionsMode = false;
 let isListPanelOpen = false; 
-let routePicks = []; 
+let activeSelectedVenue = null;
 
-// Core Identity Logic State
-let trackingModeActive = false; 
-let visitedVenues = [];
-
-// Volatile Simulated Database Repositories
 let lovedStudios = {}; 
 let studioNotes = {};  
 
@@ -291,110 +246,10 @@ function ordinal(n){
     default: return `${n}th`;
   }
 }
-function haversineMiles(lat1,lng1,lat2,lng2){
-  const R=3958.8, toRad=x=>x*Math.PI/180;
-  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
-  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-// ---- GATEWAY SESSION OVERLAY CONTROLLER INTERACTION -------------------
-document.getElementById('loginSubmitBtn').onclick = () => {
-  const emailInput = document.getElementById('userEmail').value.trim();
-  if(emailInput && emailInput.includes('@')) {
-    trackingModeActive = true;
-    document.getElementById('loginOverlay').classList.add('hide');
-  } else {
-    alert("Please enter a valid email address to start tracking, or choose the anonymous option below.");
-  }
-};
-
-document.getElementById('loginSkipBtn').onclick = () => {
-  trackingModeActive = false; // Registered cleanly as an untracked Guest
-  document.getElementById('loginOverlay').classList.add('hide');
-};
-
-document.getElementById('dirToggle').onclick = ()=>{
-  directionsMode = !directionsMode;
-  routePicks = [];
-  resetDirectionsUI();
-  closePanel();
-  renderMap();
-};
-
-function resetDirectionsUI() {
-  document.getElementById('dirToggle').className = directionsMode ? 'active' : '';
-  document.getElementById('dirHint').textContent = directionsMode ? 'Tap two venues to route between them' : '';
-  document.getElementById('routeCard').classList.remove('show');
-}
-
-function showRouteCard(){
-  const card = document.getElementById('routeCard');
-  if(routePicks.length < 2){
-    card.classList.remove('show');
-    return;
-  }
-  const [a,b] = routePicks;
-  const ca = COORDS[a.postcode], cb = COORDS[b.postcode];
-  const miles = haversineMiles(ca[0],ca[1],cb[0],cb[1]).toFixed(2);
-  const appleUrl = `https://maps.apple.com/?saddr=${encodeURIComponent(a.postcode)}&daddr=${encodeURIComponent(b.postcode)}&dirflg=w`;
-  const googleUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(a.postcode)}&destination=${encodeURIComponent(b.postcode)}&travelmode=walking`;
-  card.innerHTML = `
-    <div class="rTitle">Venue ${a.venue} (${a.postcode}) → Venue ${b.venue} (${b.postcode})</div>
-    <div>Walking Route Distance: ~${miles} miles</div>
-    <div class="rBtns">
-      <button class="appleBtn" onclick="window.open('${appleUrl}','_blank')">Apple Maps</button>
-      <button class="googleBtn" onclick="window.open('${googleUrl}','_blank')">Google Maps</button>
-      <button class="resetBtn" id="routeReset">Reset</button>
-    </div>`;
-  card.classList.add('show');
-  
-  document.getElementById('routeReset').onclick = ()=>{ 
-    routePicks=[]; 
-    directionsMode = false;
-    card.classList.remove('show'); 
-    resetDirectionsUI();
-    renderMap(); 
-    if(isListPanelOpen) buildListView(); 
-  };
-}
 
 function handlePinTap(loc){
-  if(directionsMode){
-    toggleRouteVenue(loc);
-  } else {
-    openPanel(loc);
-  }
-}
-
-function toggleRouteVenue(loc) {
-  const index = routePicks.indexOf(loc);
-  if (index > -1) {
-    routePicks.splice(index, 1);
-  } else {
-    routePicks.push(loc);
-    if(routePicks.length > 2) routePicks.shift();
-  }
-  if (routePicks.length > 0 && !directionsMode) {
-    directionsMode = true;
-    document.getElementById('dirToggle').className = 'active';
-  }
-  renderMap();
-  showRouteCard();
-}
-
-function toggleVisitedVenue(venueNum) {
-  // STRICT LOGIC VALIDATION GUARD: Stop guests from tracking history instantly
-  if(!trackingModeActive) {
-    alert("Tracking is disabled. Please restart and enter your email if you want to save your progress!");
-    return;
-  }
-  const idx = visitedVenues.indexOf(venueNum);
-  if (idx > -1) {
-    visitedVenues.splice(idx, 1);
-  } else {
-    visitedVenues.push(venueNum);
-  }
+  activeSelectedVenue = loc.venue;
+  openPanel(loc);
   renderMap();
 }
 
@@ -405,15 +260,8 @@ function sendStudioAppreciation(venueNum) {
 
 function submitStudioNote(venueNum, message) {
   if(!message.trim()) return;
-  let senderName = "An anonymous visitor";
-  if(!trackingModeActive) {
-    const customName = prompt("Since you are browsing without an email, what first name should we give the artist with this note?");
-    if(customName && customName.trim()) senderName = customName.trim();
-  } else {
-    senderName = "A tracked visitor";
-  }
   if(!studioNotes[venueNum]) studioNotes[venueNum] = [];
-  studioNotes[venueNum].push({ name: senderName, note: message });
+  studioNotes[venueNum].push({ name: "A trail visitor", note: message });
   alert("Your quick note has been delivered straight to the artist!");
 }
 
@@ -448,16 +296,20 @@ function openPanel(loc){
     html += `<div class="closedMsg">Closed on ${ordinal(selectedDate)} September.</div>`;
   }
   
-  const isVisited = visitedVenues.includes(loc.venue);
+  // Real-time Current Location maps injection configurations
+  const appleUrl = `https://maps.apple.com/?saddr=Current+Location&daddr=${encodeURIComponent(loc.postcode)}&dirflg=d`;
+  const googleUrl = `https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=${encodeURIComponent(loc.postcode)}`;
+  
   html += `
-    <div class="visitActionContainer">
-      <button class="visitBtn ${isVisited ? 'isVisited' : ''}" id="toggleVisitAction">
-        ${isVisited ? '✓ Visited' : 'Mark as Visited'}
-      </button>
+    <div class="routingSection">
+      <div class="routingTitle">Get Directions From Your Current Location:</div>
+      <div class="routingRow">
+        <button class="mapNavBtn apple" onclick="window.open('${appleUrl}','_blank')"> Open Apple Maps</button>
+        <button class="mapNavBtn google" onclick="window.open('${googleUrl}','_blank')">🗺️ Open Google Maps</button>
+      </div>
     </div>
     
     <div class="feedbackSection">
-      <h3>Say Hello!</h3>
       <div class="feedbackRow">
         <button class="loveBtn ${lovedStudios[loc.venue] ? 'loved' : ''}" id="loveActionBtn">
           ${lovedStudios[loc.venue] ? 'Loved! ❤️' : '❤️ Love this Studio!'}
@@ -471,11 +323,6 @@ function openPanel(loc){
   body.innerHTML = html;
   document.getElementById('panel').classList.add('show');
   document.getElementById('scrim').classList.add('show');
-  
-  document.getElementById('toggleVisitAction').onclick = () => {
-    toggleVisitedVenue(loc.venue);
-    openPanel(loc); 
-  };
   
   document.getElementById('loveActionBtn').onclick = () => {
     if(lovedStudios[loc.venue]) return;
@@ -492,8 +339,10 @@ function openPanel(loc){
 }
 
 function closePanel(){
+  activeSelectedVenue = null;
   document.getElementById('panel').classList.remove('show');
   if(!isListPanelOpen) document.getElementById('scrim').classList.remove('show');
+  renderMap();
 }
 document.getElementById('panelClose').onclick = closePanel;
 
@@ -510,21 +359,13 @@ function buildListView(){
     
     if(today){
       Object.entries(today).forEach(([artist,hrs])=>{
-        const isPicked = routePicks.includes(loc);
-        const routeBtnText = isPicked ? `✓ Route` : `+ Route`;
-        const activeClass = isPicked ? 'listRouteBtn activeRoute' : 'listRouteBtn';
-        
         row.innerHTML = `
-          <div class="listRowContent" style="cursor: pointer;">
+          <div class="listRowContent" style="cursor: pointer; width: 100%;">
             <span class="listDot" style="background:${loc.present ? '#2c6fbd' : '#2e8b3d'}"></span>
             <span><span class="lname">${artist}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} · ${hrs}</span></span>
           </div>
-          <button class="${activeClass}">${routeBtnText}</button>
         `;
-        row.onclick = (e)=>{
-          toggleRouteVenue(loc);
-          if (routePicks.length < 2) buildListView();
-        };
+        row.onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
         openCol.appendChild(row);
       });
     } else {
@@ -536,7 +377,7 @@ function buildListView(){
           <span><span class="lname">${[...allArtists].join(', ')}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode}</span></span>
         </div>
       `;
-      row.onclick = ()=>{ closeListPanel(); openPanel(loc); };
+      row.onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
       closedCol.appendChild(row);
     }
   });
@@ -579,24 +420,6 @@ function renderMap(){
     });
   }
 
-  if(directionsMode && routePicks.length === 2){
-    const [a,b] = routePicks;
-    const ca = COORDS[a.postcode], cb = COORDS[b.postcode];
-    const [x1,y1] = project(ca[0],ca[1],w,h);
-    const [x2,y2] = project(cb[0],cb[1],w,h);
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS,'svg');
-    svg.setAttribute('width', w); svg.setAttribute('height', h);
-    svg.style.position='absolute'; svg.style.left='0'; svg.style.top='0'; svg.style.pointerEvents='none';
-    const line = document.createElementNS(svgNS,'line');
-    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-    line.setAttribute('stroke','#4a7fb5'); line.setAttribute('stroke-width','3');
-    line.setAttribute('stroke-dasharray','6,5');
-    svg.appendChild(line);
-    canvas.appendChild(svg);
-  }
-
   const computedPositions = {};
 
   locations.forEach((loc, index)=>{
@@ -615,18 +438,14 @@ function renderMap(){
       computedPositions[posKey] = 1;
     }
 
-    const isPicked = routePicks.includes(loc);
-    const isVisited = visitedVenues.includes(loc.venue);
-    
-    let stateClass = 'closed';
-    if(openToday) stateClass = loc.present ? 'present' : 'open';
-    if(isVisited) stateClass += ' visitedState';
+    const isPicked = (activeSelectedVenue === loc.venue);
+    let stateClass = openToday ? (loc.present ? 'present' : 'open') : 'closed';
     
     const pin = document.createElement('div');
     pin.className = 'pin ' + stateClass + (isPicked ? ' picked' : '');
     pin.style.left = x+'px'; pin.style.top = y+'px';
     pin.style.zIndex = 100 + index;
-    pin.textContent = isVisited ? '✓' : loc.venue;
+    pin.textContent = loc.venue;
     
     pin.onclick = ()=>handlePinTap(loc);
     canvas.appendChild(pin);
