@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herts Visual Arts Open Studios Trail — St Albans</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#333333">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HVA Open Studios">
+<link class="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<link rel="icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<style>
+  html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
+  #app{display:flex;flex-direction:column;height:100%;}
+  
+  /* Header UI Layout */
+  header{background:#333333;color:#ffffff;padding:12px 14px;flex:0 0 auto;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
+  #brandRow{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  #brandRow img{height:28px;width:auto;border-radius:4px;background:#fff;padding:2px;}
+  header h1{margin:0;font-size:15px;font-weight:600;line-height:1.3;color:#ffffff !important;}
+  #instructions{font-size:11.5px;line-height:1.5;color:#eaeaea !important;margin-bottom:8px;}
+  
+  /* Navigation & 3D Control Bars */
+  #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
+  #dateBar::-webkit-scrollbar {height:4px;}
+  #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
+  
+  /* Accessible 3D Button Enhancements */
+  .dateBtn, #listToggle, #dirToggle, .listRouteBtn, #routeCard button, .visitBtn, #loginBox button {
+    box-shadow: 0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);
+    border: 1px solid #222222 !important;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .dateBtn:active, #listToggle:active, #dirToggle:active, .listRouteBtn:active, .visitBtn:active, #loginBox button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0px rgba(0,0,0,0.2);
+  }
+  
+  .dateBtn{flex:0 0 auto;background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+  .dateBtn.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
+  .dateBtn.noOpenings{opacity:0.4;}
+  
+  #modeRow{display:flex;gap:8px;align-items:center;margin-top:6px;}
+  #listToggle, #dirToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;font-weight:500;}
+  #dirToggle.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
+  #dirHint{color:#eaeaea;font-size:11.5px;}
+  
+  /* Map view layouts */
+  #mapWrap{flex:1 1 auto;position:relative;overflow:hidden;background:#929292;}
+  #mapCanvas{position:absolute;inset:0;background:#929292;}
+  
+  /* High-Readability Accessible Map Labels */
+  .landmark{position:absolute;font-size:11px;font-weight:700;color:#111111;white-space:nowrap;transform:translate(-50%,-100%);pointer-events:none;background:rgba(255,255,255,0.85);padding:2px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.2);border:0.5px solid rgba(0,0,0,0.1);margin-top:-6px;}
+  .landmarkDot{position:absolute;width:5px;height:5px;border-radius:50%;background:#111111;transform:translate(-50%,-50%);box-shadow:0 0 0 1.5px #ffffff;}
+  
+  /* Compact Circular Pin with Centered Number */
+  .pin {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 100;
+  }
+  .pin.open { background: #2e8b3d; }
+  .pin.present { background: #2c6fbd; }
+  .pin.closed { background: #777777; }
+  
+  /* Visited State overlay style */
+  .pin.visitedState {
+    background: #6f42c1 !important; /* Elegant purple for visited */
+    opacity: 0.75;
+  }
+  
+  /* Picked State */
+  .pin.picked {
+    transform: translate(-50%, -50%) scale(1.3);
+    outline: 1.5px solid #333333;
+    outline-offset: 1px;
+    z-index: 1000 !important;
+  }
+  
+  /* Routing Card Modals & Legend systems */
+  #routeCard{position:absolute;top:12px;left:12px;right:12px;background:rgba(255,255,255,0.96);border-radius:8px;padding:12px;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:60;display:none;color:#333333;}
+  #routeCard.show{display:block;}
+  #routeCard .rTitle{font-weight:700;margin-bottom:6px;}
+  #routeCard .rBtns{display:flex;gap:8px;margin-top:8px;}
+  #routeCard button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12.5px;cursor:pointer;font-weight:500;}
+  #routeCard .appleBtn{background:linear-gradient(to bottom, #555555, #333333);color:#fff;}
+  #routeCard .googleBtn{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#fff;}
+  #routeCard .resetBtn{background:linear-gradient(to bottom, #ffffff, #eee);color:#33;border-color:#ccc !important;text-shadow:none;}
+  #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
+  #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11.5px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+  
+  /* Pop-up Panel & Visited Tracking Action Elements */
+  #panel{position:fixed;left:0;right:0;bottom:0;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.2);padding:16px 18px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:20;max-height:55%;overflow-y:auto;color:#333333;}
+  #panel.show{transform:translateY(0);}
+  #panelClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
+  #panel h2{margin:0 0 4px 0;font-size:16px;color:#333333;}
+  #panel .sub{color:#666;font-size:12px;margin-bottom:12px;}
+  .artistRow{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;color:#333333;}
+  .artistRow .hrs{color:#2e8b3d;font-weight:600;}
+  .closedMsg{color:#888;font-style:italic;font-size:14px;padding:4px 0;}
+  .visitActionContainer{margin-top:14px;padding-top:12px;border-top:1px dashed #ddd;display:flex;justify-content:flex-end;}
+  .visitBtn{background:linear-gradient(to bottom, #6f42c1, #5a32a3);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:12.5px;cursor:pointer;font-weight:600;}
+  .visitBtn.isVisited{background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
+  
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:15;}
+  #scrim.show{opacity:1;pointer-events:auto;}
+  
+  /* Welcome Portal Login UI Overlay */
+  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #loginOverlay.hide{display:none;}
+  #loginBox{background:#ffffff;border-radius:12px;padding:24px;width:100%;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;}
+  #loginBox img{height:45px;width:auto;margin-bottom:12px;}
+  #loginBox h2{margin:0 0 8px 0;font-size:18px;color:#333;}
+  #loginBox p{font-size:13px;color:#666;line-height:1.5;margin:0 0 16px 0;}
+  #loginBox input[type="email"]{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:14px;box-sizing:border-box;margin-bottom:12px;text-align:center;}
+  #loginBox button{width:100%;padding:10px;background:linear-gradient(to bottom, #2e8b3d, #246e30);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px;}
+  #loginBox .skipBtn{background:none;border:none !important;box-shadow:none !important;text-shadow:none !important;color:#666;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px;}
+
+  /* Master List Interface updates */
+  #listPanel{position:fixed;left:0;right:0;bottom:0;top:8%;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.25);padding:16px 14px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:25;overflow-y:auto;color:#333333;}
+  #listPanel.show{transform:translateY(0);}
+  #listPanel h2{margin:6px 0 2px 0;font-size:17px;color:#333333;}
+  #listBannerInstruction{font-size:12px;color:#666;margin-bottom:14px;font-style:italic;background:#f3f7fa;padding:6px 10px;border-radius:6px;border-left:3px solid #4a7fb5;}
+  #listClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
+  #listCols{display:flex;gap:12px;}
+  .listCol{flex:1;min-width:0;}
+  .listColHead{font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;margin-bottom:10px;color:#ffffff;}
+  .openHead{background:#2e8b3d;}
+  .closedHead{background:#777777;}
+  .listRow{display:flex;align-items:center;justify-content:between;gap:8px;padding:8px 4px;border-bottom:1px solid #eee;font-size:13px;}
+  .listRowContent{display:flex;align-items:flex-start;gap:8px;cursor:pointer;flex:1;min-width:0;}
+  .listDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:4px;}
+  .listRow .lname{font-weight:600;display:block;color:#333333;}
+  .listRow .lmeta{color:#666;font-size:11px;margin-top:2px;}
+  
+  /* Distinct Tactile 3D Action Buttons inside tracking container lists */
+  .listRouteBtn{flex:0 0 auto;background:linear-gradient(to bottom, #ffffff, #e6e6e6);border:1px solid #cccccc !important;padding:5px 9px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:600;color:#333333;box-shadow: 0 1.5px 0px rgba(0,0,0,0.15);}
+  .listRouteBtn.activeRoute{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#ffffff;border-color:#386390 !important;}
+
+  /* Footer Layout Styles */
+  footer {background: #222222; color: #aaaaaa; text-align: center; font-size: 11px; padding: 6px 10px; flex: 0 0 auto; border-top: 1px solid #333333;}
+</style>
+</head>
+<body>
+<div id="loginOverlay">
+  <div id="loginBox">
+    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA Logo">
+    <h2>Welcome to the Trail!</h2>
+    <p>Enter your email address to automatically track and mark the studios you visit so you don't lose your place.</p>
+    <input type="email" id="userEmail" placeholder="your.name@example.com">
+    <button id="loginSubmitBtn">Start Trail</button>
+    <br>
+    <span class="skipBtn" id="loginSkipBtn">Continue without email</span>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div id="brandRow">
+      <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA logo" onerror="this.style.display='none'">
+      <h1 id="headline">Herts Visual Arts Open Studios Trail — St Albans<br>5–27 September 2026</h1>
+    </div>
+    <div id="instructions">
+      1. Choose visit date  · 
+      2. 🟢 Green = Open  · 
+      3. 🔵 Blue = Open+Artist Present
+    </div>
+    <div id="dateBar"></div>
+    <div id="modeRow">
+      <button id="listToggle">📋 All Artists</button>
+      <button id="dirToggle">Studio-to-Studio Directions</button>
+      <span id="dirHint"></span>
+    </div>
+  </header>
+  <div id="mapWrap">
+    <div id="mapCanvas"></div>
+    <div id="compass">N ↑</div>
+    <div id="routeCard"></div>
+    <div id="legend">
+      <span class="dot" style="background:#2e8b3d;"></span>Open   
+      <span class="dot" style="background:#2c6fbd;"></span>Artist present   
+      <span class="dot" style="background:#6f42c1;"></span>Visited   
+      <span class="dot" style="background:#777777;"></span>Closed
+    </div>
+  </div>
+  <footer>
+    Interactive Design & Copyright © Shivani Mathur
+  </footer>
+</div>
+<div id="scrim"></div>
+<div id="panel">
+  <button id="panelClose">✕</button>
+  <div id="panelBody"></div>
+</div>
+<div id="listPanel">
+  <button id="listClose">✕</button>
+  <h2 id="listTitle">All Artists</h2>
+  <div id="listBannerInstruction">Tap anywhere on an artist's row to map your route. Selecting two automatically generates directions.</div>
+  <div id="listCols">
+    <div class="listCol">
+      <div class="listColHead openHead">Open Today</div>
+      <div id="listOpen"></div>
+    </div>
+    <div class="listCol">
+      <div class="listColHead closedHead">Closed Today</div>
+      <div id="listClosed"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- DATA ARRAY MODEL -------------------------------------------------
+const locations = [
+  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
+  { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
+  { postcode:"AL3 4SE", venue:"9", present:true, days:{ 16:{"Cal Hoy":"7-9pm","Debbie Knight":"7-9pm","Gabrielle Felton":"7-9pm","Irene Maye":"7-9pm","Lisa Reissner":"7-9pm","Lottie Clarke":"7-9pm","Maddy Eaton":"7-9pm","Miroslav Mijatovic":"7-9pm"}, 17:{"Cal Hoy":"11-3","Debbie Knight":"11-3","Gabrielle Felton":"11-3","Irene Maye":"11-3","Lisa Reissner":"11-3","Lottie Clarke":"11-3","Maddy Eaton":"11-3","Miroslav Mijatovic":"11-3"}, 18:{"Cal Hoy":"10-4","Debbie Knight":"10-4
