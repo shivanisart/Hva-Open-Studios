@@ -14,34 +14,46 @@
   html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
   #app{display:flex;flex-direction:column;height:100%;}
   
-  /* Header UI */
+  /* Header UI Layout */
   header{background:#333333;color:#ffffff;padding:12px 14px;flex:0 0 auto;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
   #brandRow{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
   #brandRow img{height:28px;width:auto;border-radius:4px;background:#fff;padding:2px;}
   header h1{margin:0;font-size:15px;font-weight:600;line-height:1.3;color:#ffffff !important;}
   #instructions{font-size:11.5px;line-height:1.5;color:#eaeaea !important;margin-bottom:8px;}
   
-  /* Navigation & Date Bar Controls */
+  /* Navigation & 3D Control Bars */
   #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
   #dateBar::-webkit-scrollbar {height:4px;}
   #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
-  .dateBtn{flex:0 0 auto;background:#444444;color:#eaeaea;border:none;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
-  .dateBtn.active{background:#ffffff;color:#333333;font-weight:700;}
+  
+  /* Accessible 3D Button Enhancements */
+  .dateBtn, #listToggle, #dirToggle, .listRouteBtn, #routeCard button {
+    box-shadow: 0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);
+    border: 1px solid #222222 !important;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .dateBtn:active, #listToggle:active, #dirToggle:active, .listRouteBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0px rgba(0,0,0,0.2);
+  }
+  
+  .dateBtn{flex:0 0 auto;background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+  .dateBtn.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
   .dateBtn.noOpenings{opacity:0.4;}
   
-  /* Action controls */
   #modeRow{display:flex;gap:8px;align-items:center;margin-top:6px;}
-  #listToggle, #dirToggle {background:#444444;color:#eaeaea;border:none;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;transition:all 0.2s;font-weight:500;}
-  #dirToggle.active{background:#ffffff;color:#333333;font-weight:700;}
+  #listToggle, #dirToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;font-weight:500;}
+  #dirToggle.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
   #dirHint{color:#eaeaea;font-size:11.5px;}
   
-  /* Map Surface */
+  /* Map view layouts */
   #mapWrap{flex:1 1 auto;position:relative;overflow:hidden;background:#929292;}
   #mapCanvas{position:absolute;inset:0;background:#929292;}
   .landmark{position:absolute;font-size:10.5px;color:#333333;font-style:italic;white-space:nowrap;transform:translate(-50%,-50%);pointer-events:none;text-shadow:1px 1px 2px rgba(255,255,255,0.8);}
   .landmarkDot{position:absolute;width:4px;height:4px;border-radius:50%;background:#444444;transform:translate(-50%,-50%);}
   
-  /* Map Pins */
+  /* Pins styles */
   .pin{position:absolute;width:14px;height:14px;border-radius:50% 50% 50% 0;transform:translate(-50%,-100%) rotate(-45deg);border:1.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);cursor:pointer;}
   .pin.open{background:#2e8b3d;}
   .pin.present{background:#2c6fbd;}
@@ -49,15 +61,15 @@
   .pin.picked{transform:translate(-50%,-100%) rotate(-45deg) scale(1.25);outline:2px solid #333333;outline-offset:1px;z-index:1000 !important;}
   .pinNum{position:absolute;width:13px;height:13px;border-radius:50%;background:#333333;color:#fff;font-size:8.5px;font-weight:700;display:flex;align-items:center;justify-content:center;pointer-events:none;transform:translate(5px,-20px);box-shadow:0 1px 2px rgba(0,0,0,0.2);z-index:2;}
   
-  /* Overlays & Drawers */
+  /* Routing Card Modals & Legend systems */
   #routeCard{position:absolute;top:12px;left:12px;right:12px;background:rgba(255,255,255,0.96);border-radius:8px;padding:12px;font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:60;display:none;color:#333333;}
   #routeCard.show{display:block;}
   #routeCard .rTitle{font-weight:700;margin-bottom:6px;}
   #routeCard .rBtns{display:flex;gap:8px;margin-top:8px;}
   #routeCard button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12.5px;cursor:pointer;font-weight:500;}
-  #routeCard .appleBtn{background:#333333;color:#fff;}
-  #routeCard .googleBtn{background:#4a7fb5;color:#fff;}
-  #routeCard .resetBtn{background:#eee;color:#333;flex:0 0 auto;padding:8px 12px;}
+  #routeCard .appleBtn{background:linear-gradient(to bottom, #555555, #333333);color:#fff;}
+  #routeCard .googleBtn{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#fff;}
+  #routeCard .resetBtn{background:linear-gradient(to bottom, #ffffff, #eee);color:#333;border-color:#ccc !important;text-shadow:none;}
   #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
   #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11.5px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
@@ -73,10 +85,11 @@
   #scrim{position:fixed;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:15;}
   #scrim.show{opacity:1;pointer-events:auto;}
   
-  /* All Artists Master List UI styling updates */
+  /* Master List Interface updates */
   #listPanel{position:fixed;left:0;right:0;bottom:0;top:8%;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.25);padding:16px 14px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:25;overflow-y:auto;color:#333333;}
   #listPanel.show{transform:translateY(0);}
-  #listPanel h2{margin:6px 0 14px 0;font-size:17px;color:#333333;}
+  #listPanel h2{margin:6px 0 2px 0;font-size:17px;color:#333333;}
+  #listBannerInstruction{font-size:12px;color:#666;margin-bottom:14px;font-style:italic;background:#f3f7fa;padding:6px 10px;border-radius:6px;border-left:3px solid #4a7fb5;}
   #listClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
   #listCols{display:flex;gap:12px;}
   .listCol{flex:1;min-width:0;}
@@ -89,9 +102,9 @@
   .listRow .lname{font-weight:600;display:block;color:#333333;}
   .listRow .lmeta{color:#666;font-size:11px;margin-top:2px;}
   
-  /* Direct-Action Route Buttons inside layout rows */
-  .listRouteBtn{flex:0 0 auto;background:#eee;border:none;padding:5px 8px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:600;transition:all 0.2s;color:#333333;}
-  .listRouteBtn.activeRoute{background:#4a7fb5;color:#ffffff;}
+  /* Distinct Tactile 3D Action Buttons inside tracking container lists */
+  .listRouteBtn{flex:0 0 auto;background:linear-gradient(to bottom, #ffffff, #e6e6e6);border:1px solid #cccccc !important;padding:5px 9px;font-size:11px;border-radius:4px;cursor:pointer;font-weight:600;color:#333333;box-shadow: 0 1.5px 0px rgba(0,0,0,0.15);}
+  .listRouteBtn.activeRoute{background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);color:#ffffff;border-color:#386390 !important;}
 </style>
 </head>
 <body>
@@ -99,7 +112,7 @@
   <header>
     <div id="brandRow">
       <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA logo" onerror="this.style.display='none'">
-      <h1 id="headline">Herts Visual Arts <br>Open Studios Trail — St Albans<br>5–27 September 2026</h1>
+      <h1 id="headline">Herts Open Studios Trail — St Albans<br>5–27 September 2026</h1>
     </div>
     <div id="instructions">
       1. Choose visit date below  · 
@@ -133,6 +146,7 @@
 <div id="listPanel">
   <button id="listClose">✕</button>
   <h2 id="listTitle">All Artists</h2>
+  <div id="listBannerInstruction">Tap '+ Route' on any two open artists to map the exact route between their studios.</div>
   <div id="listCols">
     <div class="listCol">
       <div class="listColHead openHead">Open Today</div>
@@ -146,7 +160,7 @@
 </div>
 
 <script>
-// ---- DATA -----------------------------------------------------------
+// ---- DATA ARRAY MODEL -------------------------------------------------
 const locations = [
   { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
   { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
@@ -189,16 +203,17 @@ const LANDMARKS = [
   {name:"Sandridge →", lat:51.7810, lng:-0.3200}
 ];
 
-// ---- PROJECTION -------------------------------------------------------
+// ---- MAP PROJECTIONS --------------------------------------------------
 const LAT_MIN=51.700, LAT_MAX=51.790, LNG_MIN=-0.400, LNG_MAX=-0.240;
 function project(lat,lng,w,h){
   return [(lng-LNG_MIN)/(LNG_MAX-LNG_MIN)*w, (LAT_MAX-lat)/(LAT_MAX-LAT_MIN)*h];
 }
 
-// ---- APP LOGIC --------------------------------------------------------
+// ---- APP CONTROLLERS --------------------------------------------------
 const DATES = Array.from({length:23}, (_,i)=>i+5);
 let selectedDate = 5;
 let directionsMode = false;
+let isListPanelOpen = false; // State flag to control map dot visibility
 let routePicks = []; 
 
 function ordinal(n){
@@ -248,7 +263,7 @@ function showRouteCard(){
       <button class="resetBtn" id="routeReset">Reset</button>
     </div>`;
   card.classList.add('show');
-  document.getElementById('routeReset').onclick = ()=>{ routePicks=[]; card.classList.remove('show'); renderMap(); buildListView(); };
+  document.getElementById('routeReset').onclick = ()=>{ routePicks=[]; card.classList.remove('show'); renderMap(); if(isListPanelOpen) buildListView(); };
 }
 
 function handlePinTap(loc){
@@ -285,7 +300,7 @@ function buildDateBar(){
     const btn = document.createElement('button');
     btn.className = 'dateBtn' + (d===selectedDate?' active':'') + (anyOpen?'':' noOpenings');
     btn.textContent = ordinal(d);
-    btn.onclick = ()=>{ selectedDate = d; refreshDateBar(); renderMap(); if(document.getElementById('listPanel').classList.contains('show')) buildListView(); };
+    btn.onclick = ()=>{ selectedDate = d; refreshDateBar(); renderMap(); if(isListPanelOpen) buildListView(); };
     btn.id = 'date-'+d;
     bar.appendChild(btn);
   });
@@ -313,7 +328,7 @@ function openPanel(loc){
 }
 function closePanel(){
   document.getElementById('panel').classList.remove('show');
-  if(!document.getElementById('listPanel').classList.contains('show')) document.getElementById('scrim').classList.remove('show');
+  if(!isListPanelOpen) document.getElementById('scrim').classList.remove('show');
 }
 document.getElementById('panelClose').onclick = closePanel;
 
@@ -366,11 +381,15 @@ function buildListView(){
 }
 
 function openListPanel(){
+  isListPanelOpen = true;
   buildListView();
+  renderMap(); // Re-render map to filter closed out dots
   document.getElementById('listPanel').classList.add('show');
   document.getElementById('scrim').classList.add('show');
 }
 function closeListPanel(){
+  isListPanelOpen = false;
+  renderMap(); // Restore all elements on background map wrap canvas
   document.getElementById('listPanel').classList.remove('show');
   document.getElementById('scrim').classList.remove('show');
 }
@@ -383,18 +402,21 @@ function renderMap(){
   canvas.innerHTML = '';
   const w = canvas.clientWidth, h = canvas.clientHeight;
 
-  LANDMARKS.forEach(lm=>{
-    const [x,y] = project(lm.lat, lm.lng, w, h);
-    const dot = document.createElement('div');
-    dot.className = 'landmarkDot';
-    dot.style.left = x+'px'; dot.style.top = y+'px';
-    canvas.appendChild(dot);
-    const label = document.createElement('div');
-    label.className = 'landmark';
-    label.textContent = lm.name;
-    label.style.left = x+'px'; label.style.top = (y-10)+'px';
-    canvas.appendChild(label);
-  });
+  // Only render tracking texts/landmarks if user isn't browsing the drawer
+  if(!isListPanelOpen) {
+    LANDMARKS.forEach(lm=>{
+      const [x,y] = project(lm.lat, lm.lng, w, h);
+      const dot = document.createElement('div');
+      dot.className = 'landmarkDot';
+      dot.style.left = x+'px'; dot.style.top = y+'px';
+      canvas.appendChild(dot);
+      const label = document.createElement('div');
+      label.className = 'landmark';
+      label.textContent = lm.name;
+      label.style.left = x+'px'; label.style.top = (y-10)+'px';
+      canvas.appendChild(label);
+    });
+  }
 
   if(directionsMode && routePicks.length === 2){
     const [a,b] = routePicks;
@@ -417,6 +439,11 @@ function renderMap(){
   const computedPositions = {};
 
   locations.forEach((loc, index)=>{
+    const openToday = loc.days[selectedDate];
+    
+    // CRITICAL CLARITY FIX: Hide closed dots on the map when list view is pulled up
+    if(isListPanelOpen && !openToday) return;
+
     const c = COORDS[loc.postcode];
     if(!c) return;
     let [x,y] = project(c[0], c[1], w, h);
@@ -430,7 +457,6 @@ function renderMap(){
       computedPositions[posKey] = 1;
     }
 
-    const openToday = loc.days[selectedDate];
     const isPicked = routePicks.includes(loc);
     let stateClass = 'closed';
     if(openToday) stateClass = loc.present ? 'present' : 'open';
