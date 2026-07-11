@@ -2,77 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Herts Visual Arts Open Studios Trail — St Albans</title>
+<title>Herts Visual Arts Open Studios Trail</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#333333">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="HVA Open Studios">
-<link class="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
 <link rel="icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
 <style>
-  html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
+  html,body{margin:0;padding:0;height:100%;font-family:sans-serif;background:#eaeaea;color:#333;}
   #app{display:flex;flex-direction:column;height:100%;}
+  header{background:#333;color:#fff;padding:15px;flex:0 0 auto;}
+  #dateBar{display:flex;gap:6px;overflow-x:auto;padding-top:10px;}
+  .dateBtn{background:#555;color:#eee;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;}
+  .dateBtn.active{background:#fff;color:#333;font-weight:700;}
   
-  /* Header UI Layout */
-  header{background:#333333;color:#ffffff;padding:12px 14px;flex:0 0 auto;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
-  #brandRow{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-  #brandRow img{height:28px;width:auto;border-radius:4px;background:#fff;padding:2px;}
-  header h1{margin:0;font-size:15px;font-weight:600;line-height:1.3;color:#ffffff !important;}
-  #instructions{font-size:13px;font-weight:500;color:#eaeaea !important;margin-bottom:8px;}
+  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #loginOverlay.hide{display:none;}
+  #loginBox{background:#fff;border-radius:12px;padding:25px;width:100%;max-width:350px;text-align:center;}
+  #areaSummary{width:100%;margin:15px 0;border-collapse:collapse;font-size:13px;}
+  #areaSummary th, #areaSummary td{padding:8px;border-bottom:1px solid #ddd;text-align:left;}
+  .primaryStartBtn{width:100%;padding:12px;background:#2e8b3d;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;}
   
-  /* Navigation & Controls */
-  #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
-  #dateBar::-webkit-scrollbar {height:4px;}
-  #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
-  
-  .dateBtn{flex:0 0 auto;background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;border: 1px solid #222222;}
-  .dateBtn.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;}
-  
-  /* Mandatory Gateway Screen */
-  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
-  #loginBox{background:#ffffff;border-radius:12px;padding:20px;width:100%;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;}
-  #loginBox img{height:45px;width:auto;margin-bottom:12px;}
-  #loginBox h2{margin:0 0 8px 0;font-size:18px;color:#333;}
-  #loginBox input[type="email"]{width:100%;padding:11px;border:1px solid #bbb;border-radius:6px;font-size:14px;box-sizing:border-box;margin-bottom:14px;}
-  #loginBox button.primaryStartBtn{width:100%;padding:12px;background:#2e8b3d;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;}
-  
-  /* New Summary Table */
-  #areaSummary{width:100%;margin:15px 0;border-collapse:collapse;font-size:12px;text-align:left;}
-  #areaSummary th, #areaSummary td{padding:6px;border-bottom:1px solid #ddd;}
-  
-  /* Map & UI Elements */
   #mapWrap{flex:1 1 auto;position:relative;background:#929292;}
   #mapCanvas{position:absolute;inset:0;}
-  .pin{position:absolute;width:15px;height:15px;border-radius:50%;border:1px solid #fff;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .pin.open{background:#2e8b3d;}
-  .pin.closed{background:#777;}
-  
-  #panel{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:20px;border-radius:14px 14px 0 0;transform:translateY(110%);transition:transform 0.2s;z-index:20;}
-  #panel.show{transform:translateY(0);}
+  .pin{position:absolute;width:16px;height:16px;border-radius:50%;background:#2e8b3d;border:2px solid #fff;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 </style>
 </head>
 <body>
 
 <div id="loginOverlay">
   <div id="loginBox">
-    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA Logo">
-    <h2>Herts Open Studios</h2>
-    <p style="font-size:12px; color:#666;">View current artist counts by area:</p>
-    
+    <h2>Welcome to the Trail</h2>
     <table id="areaSummary">
       <thead><tr><th>Area</th><th>Total</th><th>Open Today</th></tr></thead>
-      <tbody id="summaryBody"></tbody>
+      <tbody id="summaryBody"><tr><td>St Albans</td><td id="totalCount">0</td><td id="openCount">0</td></tr></tbody>
     </table>
-
-    <input type="email" id="userEmail" placeholder="Enter email to continue">
-    <button class="primaryStartBtn" id="loginSubmitBtn">Start Exploring</button>
+    <input type="email" id="userEmail" placeholder="Enter email" style="width:100%;padding:10px;margin-bottom:15px;box-sizing:border-box;">
+    <button class="primaryStartBtn" id="loginSubmitBtn">Start Trail</button>
   </div>
 </div>
 
 <div id="app">
   <header>
-    <div id="brandRow"><h1>Open Studio Trail</h1></div>
+    <h1>Open Studio Trail</h1>
     <div id="dateBar"></div>
   </header>
   <div id="mapWrap"><div id="mapCanvas"></div></div>
@@ -80,44 +52,32 @@
 
 <script>
 const locations = [
-  // ... (Keep your existing data array here exactly as it was)
-  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
-  { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
-  { postcode:"AL3 4SE", venue:"9", present:true, days:{ 16:{"Cal Hoy":"7-9pm","Debbie Knight":"7-9pm","Gabrielle Felton":"7-9pm","Irene Maye":"7-9pm","Lisa Reissner":"7-9pm","Lottie Clarke":"7-9pm","Maddy Eaton":"7-9pm","Miroslav Mijatovic":"7-9pm"}, 17:{"Cal Hoy":"11-3","Debbie Knight":"11-3","Gabrielle Felton":"11-3","Irene Maye":"11-3","Lisa Reissner":"11-3","Lottie Clarke":"11-3","Maddy Eaton":"11-3","Miroslav Mijatovic":"11-3"}, 18:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 19:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 20:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 21:{"Cal Hoy":"11-3","Debbie Knight":"11-3","Gabrielle Felton":"11-3","Irene Maye":"11-3","Lisa Reissner":"11-3","Lottie Clarke":"11-3","Maddy Eaton":"11-3","Miroslav Mijatovic":"11-3"} } },
-  { postcode:"AL3 4SE", venue:"10", days:{ 23:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"}, 24:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"}, 25:{"Abigail Lagden":"10-7","Barbara Burrows":"10-7","Fiona Ryan-Watson":"10-7","Hazel Russell":"10-7","Jackie O'Keeffe":"10-7","Jaiya Bhandari":"10-7","Laura Murgia":"10-7","Mirna Una Majer":"10-7","Rosie Elizabeth Barker":"10-7","Sabine Riechmann":"10-7"}, 26:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"} } },
-  { postcode:"AL3 4RU", venue:"11", days:{ 10:{"One Creative Ape":"10:30-6"}, 11:{"One Creative Ape":"10:30-6"}, 12:{"One Creative Ape":"10:30-6"}, 13:{"One Creative Ape":"10:30-6"}, 19:{"One Creative Ape":"10:30-6"}, 20:{"One Creative Ape":"10:30-6"} } },
-  { postcode:"AL3 4EH", venue:"12", days:{ 5:{"Philippa Bicknell":"10-5:30"},6:{"Philippa Bicknell":"11-5"},7:{"Philippa Bicknell":"10-5:30"},8:{"Philippa Bicknell":"10-5:30"},9:{"Philippa Bicknell":"10-5:30"},10:{"Philippa Bicknell":"10-5:30"},11:{"Philippa Bicknell":"10-5:30"},12:{"Philippa Bicknell":"11-5"},13:{"Philippa Bicknell":"10-5:30"},15:{"Philippa Bicknell":"10-5:30"},16:{"Philippa Bicknell":"10-5:30"},17:{"Philippa Bicknell":"10-5:30"},18:{"Philippa Bicknell":"10-5:30"},19:{"Philippa Bicknell":"11-4"},20:{"Philippa Bicknell":"11-4"},21:{"Philippa Bicknell":"10-5:30"},22:{"Philippa Bicknell":"10-5:30"},23:{"Philippa Bicknell":"10-5:30"},24:{"Philippa Bicknell":"10-5:30"},25:{"Philippa Bicknell":"10-5:30"},26:{"Philippa Bicknell":"11-4"},27:{"Philippa Bicknell":"11-4"} } },
-  { postcode:"AL1 1RU", venue:"13", days:{ 5:{"Bob Goodall":"2-6"},6:{"Bob Goodall":"2-6"},9:{"Bob Goodall":"2-6"},11:{"Bob Goodall":"2-6"},12:{"Bob Goodall":"2-6"},13:{"Bob Goodall":"2-6"},16:{"Bob Goodall":"2-6"},18:{"Bob Goodall":"2-6"},19:{"Bob Goodall":"2-6"},23:{"Bob Goodall":"2-6"},25:{"Bob Goodall":"2-6"},26:{"Bob Goodall":"2-6"} } },
-  { postcode:"AL1 5BY", venue:"14", days:{ 13:{"AnnaSilvia Dooley":"2-7"},14:{"AnnaSilvia Dooley":"2-5"},15:{"AnnaSilvia Dooley":"2-5"},26:{"AnnaSilvia Dooley":"2-5"},27:{"AnnaSilvia Dooley":"2-5"} } },
-  { postcode:"AL1 5SL", venue:"15", days:{ 16:{"Jessica Ozlo":"11-4"},17:{"Jessica Ozlo":"11-4"},18:{"Jessica Ozlo":"4-8"},19:{"Jessica Ozlo":"11-4"},23:{"Jessica Ozlo":"11-4"},24:{"Jessica Ozlo":"11-4"},25:{"Jessica Ozlo":"4-8"},26:{"Jessica Ozlo":"11-4"} } },
-  { postcode:"AL4 0JQ", venue:"16", days:{ 5:{"TG Art (Toni Gates)":"10-2"},9:{"TG Art (Toni Gates)":"10-2"},16:{"TG Art (Toni Gates)":"10-2"},23:{"TG Art (Toni Gates)":"10-2"} } },
-  { postcode:"AL1 5NA", venue:"17", days:{ 11:{"Marta Nicholson":"11-5"},12:{"Marta Nicholson":"5-7:30"},17:{"Marta Nicholson":"11-5"},18:{"Marta Nicholson":"11-5"},19:{"Marta Nicholson":"5-7:30"},20:{"Marta Nicholson":"5-7:30"},23:{"Marta Nicholson":"11-5"},24:{"Marta Nicholson":"11-5"},25:{"Marta Nicholson":"5-7:30"},26:{"Marta Nicholson":"5-7:30"} } },
-  { postcode:"AL1 4TU", venue:"18", days:{ 11:{"Judith Moule":"10-5"},12:{"Judith Moule":"10-5"},18:{"Judith Moule":"10-5"},19:{"Judith Moule":"10-5"},25:{"Judith Moule":"10-5"},26:{"Judith Moule":"10-5"} } },
-  { postcode:"AL1 5BL", venue:"19", days:{ 5:{"Mandy Johnson":"9-3"},6:{"Mandy Johnson":"9-3"},7:{"Mandy Johnson":"8-3"},8:{"Mandy Johnson":"8-3"},9:{"Mandy Johnson":"8-3"},10:{"Mandy Johnson":"8-3"},11:{"Mandy Johnson":"8-3"},12:{"Mandy Johnson":"9-3"},13:{"Mandy Johnson":"9-3"},14:{"Mandy Johnson":"8-3"},15:{"Mandy Johnson":"8-3"},16:{"Mandy Johnson":"8-3"},17:{"Mandy Johnson":"8-3"},18:{"Mandy Johnson":"8-3"},19:{"Mandy Johnson":"9-3"},20:{"Mandy Johnson":"9-3"},21:{"Mandy Johnson":"8-3"},22:{"Mandy Johnson":"8-3"},23:{"Mandy Johnson":"8-3"},24:{"Mandy Johnson":"8-3"},25:{"Mandy Johnson":"8-3"},26:{"Mandy Johnson":"9-3"},27:{"Mandy Johnson":"9-3"} } },
-  { postcode:"AL1 3GU", venue:"20", days:{ 17:{"Gabriela Moad":"1-4"},18:{"Gabriela Moad":"1-4"},19:{"Gabriela Moad":"1-4"},20:{"Gabriela Moad":"1-4"},21:{"Gabriela Moad":"1-4"},22:{"Gabriela Moad":"1-4"},23:{"Gabriela Moad":"1-4"} } },
-  { postcode:"AL1 4DG", venue:"21", days:{ 17:{"Fiona Booy Ceramics":"5-7"},18:{"Fiona Booy Ceramics":"1-5"},19:{"Fiona Booy Ceramics":"11-4"},24:{"Fiona Booy Ceramics":"5-7"},25:{"Fiona Booy Ceramics":"1-5"},26:{"Fiona Booy Ceramics":"11-4"} } },
-  { postcode:"AL1 4EP", venue:"22", days:{ 5:{"Dave Nelson":"10-6"},6:{"Dave Nelson":"10-6"} } },
-  { postcode:"AL1 4QY", venue:"23", days:{ 5:{"Carrie Cook":"10-4"},6:{"Carrie Cook":"10-4"},9:{"Carrie Cook":"10-4"},10:{"Carrie Cook":"10-4"},11:{"Carrie Cook":"10-4"} } },
-  { postcode:"AL4 9SU", venue:"24", days:{ 5:{"Gerry Wilmer":"11-4:30"},6:{"Gerry Wilmer":"11-4:30"},12:{"Gerry Wilmer":"11-4:30"},13:{"Gerry Wilmer":"11-4:30"},19:{"Gerry Wilmer":"11-4:30"},20:{"Gerry Wilmer":"11-4:30"},26:{"Gerry Wilmer":"11-4:30"},27:{"Gerry Wilmer":"11-4:30"} } },
-  { postcode:"AL2 3NE", venue:"80", days:{ 5:{"Artists In The Wood":"11-4"},9:{"Artists In The Wood":"11-4"},11:{"Artists In The Wood":"11-4"},16:{"Artists In The Wood":"11-4"},19:{"Artists In The Wood":"11-4"},23:{"Artists In The Wood":"11-4"},24:{"Artists In The Wood":"11-4"} } },
-  { postcode:"AL2 2JR", venue:"81", days:{ 6:{"Suzi Clark Artist":"3-5:30"},11:{"Suzi Clark Artist":"11-1:30"},13:{"Suzi Clark Artist":"3-5:30"},19:{"Suzi Clark Artist":"11-1:30"},25:{"Suzi Clark Artist":"11-1:30"} } },
-  { postcode:"AL1 1BZ", venue:"82", days:{ 5:{"Mella Kelly":"11-5"},6:{"Mella Kelly":"11-5"},7:{"Mella Kelly":"12-6"},8:{"Mella Kelly":"12-6"},9:{"Mella Kelly":"12-6"},10:{"Mella Kelly":"12-6"},11:{"Mella Kelly":"12-6"},12:{"Mella Kelly":"11-5"},13:{"Mella Kelly":"11-5"},14:{"Mella Kelly":"12-6"},15:{"Mella Kelly":"12-6"},16:{"Mella Kelly":"12-6"},17:{"Mella Kelly":"12-6"},18:{"Mella Kelly":"12-6"},19:{"Mella Kelly":"11-5"},20:{"Mella Kelly":"11-5"} } },
-  { postcode:"AL3 4SE", venue:"83", days:{ 9:{"Dacorum & Chiltern Potters Guild":"10-5"},10:{"Dacorum & Chiltern Potters Guild":"10-5"},11:{"Dacorum & Chiltern Potters Guild":"10-5"} } }
+  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny":"10-5"}, 13:{"Jenny":"10-5"} } },
+  { postcode:"AL2 3NE", venue:"9", days:{ 16:{"Bob":"7-9pm"}, 17:{"Bob":"11-3"} } }
 ];
 
-// Logic to populate summary
 function populateSummary() {
-  const tbody = document.getElementById('summaryBody');
-  const today = new Date().getDate(); // Simplistic: matches dates in your keys
-  const areaData = { "St Albans": { total: locations.length, open: locations.filter(l => l.days[today]).length } };
-  
-  tbody.innerHTML = `<tr><td>St Albans</td><td>${areaData["St Albans"].total}</td><td>${areaData["St Albans"].open}</td></tr>`;
+  const today = new Date().getDate();
+  document.getElementById('totalCount').textContent = locations.length;
+  document.getElementById('openCount').textContent = locations.filter(l => l.days[today]).length;
+}
+
+function buildDateBar() {
+  const bar = document.getElementById('dateBar');
+  for(let i=5; i<=27; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'dateBtn' + (i===5?' active':'');
+    btn.textContent = i;
+    btn.onclick = () => { document.querySelectorAll('.dateBtn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); };
+    bar.appendChild(btn);
+  }
 }
 
 document.getElementById('loginSubmitBtn').onclick = () => {
   if(document.getElementById('userEmail').value.includes('@')) {
     document.getElementById('loginOverlay').classList.add('hide');
-  } else { alert("Please enter email"); }
+    buildDateBar();
+  } else { alert("Enter email"); }
 };
 
 populateSummary();
