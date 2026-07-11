@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herts Visual Arts Open Studios Trail — St Albans</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#333333">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HVA Open Studios">
+<link class="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<link rel="icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<style>
+  html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
+  #app{display:none;flex-direction:column;height:100%;}
+  header{background:#333333;color:#ffffff;padding:12px 14px;flex:0 0 auto;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
+  #brandRow{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  #brandRow img{height:28px;width:auto;border-radius:4px;background:#fff;padding:2px;}
+  header h1{margin:0;font-size:15px;font-weight:600;line-height:1.3;color:#ffffff !important;}
+  #instructions{font-size:13px;font-weight:500;color:#eaeaea !important;margin-bottom:8px;}
+  #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
+  .dateBtn{flex:0 0 auto;background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+  .dateBtn.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;}
+  #modeRow{display:flex;gap:8px;align-items:center;margin-top:6px;}
+  #listToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;}
+  #mapWrap{flex:1 1 auto;position:relative;overflow:hidden;background:#929292;}
+  #mapCanvas{position:absolute;inset:0;background:#929292;}
+  .pin{position:absolute;width:15px;height:15px;border-radius:50%;border:1px solid #ffffff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:8px;font-weight:700;z-index:100;transform:translate(-50%,-50%);}
+  .pin.open{background:#2e8b3d;}
+  .pin.present{background:#2c6fbd;}
+  .pin.closed{background:#777777;}
+  .pin.visitedState{background:#6f42c1 !important;}
+  .pin.picked{transform:translate(-50%,-50%) scale(1.2);outline:1.5px solid #333333;}
+  #panel{position:fixed;left:0;right:0;bottom:0;background:#ffffff;border-radius:14px 14px 0 0;padding:16px 18px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:20;max-height:65%;overflow-y:auto;}
+  #panel.show{transform:translateY(0);}
+  
+  /* Login Gateway */
+  #loginOverlay{position:fixed;inset:0;background:#ffffff;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #loginBox{width:100%;max-width:340px;text-align:center;}
+  #loginBox img{height:60px;margin-bottom:15px;}
+  #summaryTable{width:100%;margin:20px 0;border-collapse:collapse;font-size:14px;}
+  #summaryTable td{padding:8px;border-bottom:1px solid #ddd;text-align:left;}
+  .btnStart{width:100%;padding:14px;background:#2e8b3d;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div id="loginBox">
+    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+    <h2>Welcome</h2>
+    <table id="summaryTable">
+      <tr><td>Total Artists</td><td id="totalArtists">0</td></tr>
+      <tr><td>Open Today</td><td id="openCount">0</td></tr>
+    </table>
+    <input type="email" id="userEmail" placeholder="Enter email" style="width:100%;padding:12px;margin-bottom:15px;box-sizing:border-box;">
+    <button class="btnStart" id="loginBtn">Start the trail</button>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>Open Studio Trail — St Albans</h1>
+    <div id="dateBar"></div>
+    <div id="modeRow"><button id="listToggle">📋 All Artists List</button></div>
+  </header>
+  <div id="mapWrap"><div id="mapCanvas"></div></div>
+</div>
+
+<div id="panel"><button id="panelClose">✕</button><div id="panelBody"></div></div>
+
+<script>
+const locations = [
+  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
+  { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
+  { postcode:"AL3 4SE", venue:"10", days:{ 23:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5"}, 24:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5"} } },
+  { postcode:"AL1 1BZ", venue:"82", days:{ 5:{"Mella Kelly":"11-5"}, 6:{"Mella Kelly":"11-5"}, 7:{"Mella Kelly":"12-6"}, 8:{"Mella Kelly":"12-6"}, 9:{"Mella Kelly":"12-6"}, 10:{"Mella Kelly":"12-6"}, 11:{"Mella Kelly":"12-6"}, 12:{"Mella Kelly":"11-5"}, 13:{"Mella Kelly":"11-5"}, 14:{"Mella Kelly":"12-6"}, 15:{"Mella Kelly":"12-6"}, 16:{"Mella Kelly":"12-6"}, 17:{"Mella Kelly":"12-6"}, 18:{"Mella Kelly":"12-6"}, 19:{"Mella Kelly":"11-5"}, 20:{"Mella Kelly":"11-5"} } }
+];
+
+// Logic: Default to 5th if outside 5-27 Sept range
+const now = new Date();
+let selectedDate = 5;
+if (now.getMonth() === 8 && now.getDate() >= 5 && now.getDate() <= 27) {
+  selectedDate = now.getDate();
+}
+
+// Set up UI counters
+document.getElementById('totalArtists').textContent = locations.length;
+document.getElementById('openCount').textContent = locations.filter(l => l.days[selectedDate]).length;
+
+// Login trigger
+document.getElementById('loginBtn').onclick = () => {
+  if(document.getElementById('userEmail').value.includes('@')) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    // Initialize your map render here
+  } else {
+    alert("Please enter a valid email.");
+  }
+};
+</script>
+</body>
+</html>
