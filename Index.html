@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herts Visual Arts Open Studios Trail</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#333333">
+<style>
+  html,body{margin:0;padding:0;height:100%;font-family:sans-serif;background:#eaeaea;}
+  
+  /* The Login Screen */
+  #loginOverlay{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+  #loginBox{width:100%;max-width:350px;text-align:center;}
+  #areaSummary{width:100%;margin:20px 0;border-collapse:collapse;}
+  #areaSummary th, #areaSummary td{padding:10px;border-bottom:1px solid #ccc;text-align:left;}
+  
+  /* The Main App (Initially Hidden) */
+  #app{display:none;flex-direction:column;height:100%;}
+  header{background:#333;color:#fff;padding:15px;}
+  #dateBar{display:flex;gap:5px;overflow-x:auto;padding-top:10px;}
+  .dateBtn{background:#555;color:#fff;border:none;padding:8px;border-radius:4px;cursor:pointer;}
+  .dateBtn.active{background:#fff;color:#333;}
+  #mapWrap{flex:1;position:relative;background:#929292;}
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="loginOverlay">
+  <div id="loginBox">
+    <h2>Welcome</h2>
+    <table id="areaSummary">
+      <thead><tr><th>Area</th><th>Total</th><th>Open Today</th></tr></thead>
+      <tbody><tr><td>St Albans</td><td id="totalCount">0</td><td id="openCount">0</td></tr></tbody>
+    </table>
+    <input type="email" id="userEmail" placeholder="Enter email" style="width:100%;padding:10px;margin-bottom:15px;box-sizing:border-box;">
+    <button id="loginSubmitBtn" style="width:100%;padding:12px;background:#2e8b3d;color:#fff;border:none;cursor:pointer;">Start Trail</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+  <header>
+    <h1>Open Studio Trail</h1>
+    <div id="dateBar"></div>
+  </header>
+  <div id="mapWrap"><div id="mapCanvas"></div></div>
+</div>
+
+<script>
+const locations = [
+  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny":"10-5"}, 13:{"Jenny":"10-5"} } },
+  { postcode:"AL2 3NE", venue:"9", days:{ 16:{"Bob":"7-9pm"}, 17:{"Bob":"11-3"} } }
+];
+
+// Populate summary on load
+const today = new Date().getDate();
+document.getElementById('totalCount').textContent = locations.length;
+document.getElementById('openCount').textContent = locations.filter(l => l.days[today]).length;
+
+// Handle Start button
+document.getElementById('loginSubmitBtn').onclick = () => {
+  const email = document.getElementById('userEmail').value;
+  if(email && email.includes('@')) {
+    // Hide login, Show App
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    
+    // Build date bar once revealed
+    const bar = document.getElementById('dateBar');
+    for(let i=5; i<=27; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'dateBtn' + (i===5?' active':'');
+      btn.textContent = i;
+      btn.onclick = () => { 
+        document.querySelectorAll('.dateBtn').forEach(b=>b.classList.remove('active')); 
+        btn.classList.add('active'); 
+      };
+      bar.appendChild(btn);
+    }
+  } else {
+    alert("Please enter a valid email.");
+  }
+};
+</script>
+</body>
+</html>
