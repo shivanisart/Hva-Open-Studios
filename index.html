@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herts Visual Arts Open Studios Trail — St Albans</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#333333">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HVA Open Studios">
+<link class="apple-touch-icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<link rel="icon" href="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png">
+<style>
+  html,body{margin:0;padding:0;height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;background:#eaeaea;color:#333333;}
+  #app{display:flex;flex-direction:column;height:100%;}
+  
+  /* Header UI Layout */
+  header{background:#333333;color:#ffffff;padding:12px 14px;flex:0 0 auto;box-shadow:0 2px 4px rgba(0,0,0,0.15);}
+  #brandRow{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:6px;text-align:center;}
+  #brandRow img{height:32px;width:auto;border-radius:4px;background:#fff;padding:2px;}
+  header h1{margin:0;font-size:13.5px;font-weight:600;line-height:1.3;color:#ffffff !important;text-align:center;}
+  #instructions{font-size:13px;font-weight:500;color:#eaeaea !important;margin-bottom:8px;text-align:center;}
+
+  /* Switch Area control */
+  #areaSwitchRow{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;}
+  #switchAreaBtn{background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border:1px solid #222 !important;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);text-shadow:0 -1px 0 rgba(0,0,0,0.25);}
+  #switchAreaBtn:active{transform:translateY(1px);box-shadow:0 1px 0px rgba(0,0,0,0.2);}
+  #currentAreaLabel{font-size:14px;font-weight:700;color:#ffffff;}
+  #areaDropdown{display:none;background:#ffffff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.25);margin-bottom:8px;overflow:hidden;}
+  #areaDropdown.show{display:block;}
+  .areaOption{padding:9px 12px;font-size:13px;color:#333333;border-bottom:1px solid #eee;cursor:pointer;}
+  .areaOption:last-child{border-bottom:none;}
+  .areaOption:hover{background:#f3f7fa;}
+  .areaOption.currentAreaOption{background:#e9f2fb;font-weight:700;}
+
+  /* You-are-here geolocation dot */
+  #youAreHereDot{position:absolute;width:0;height:0;z-index:600;}
+  .youAreHereHalo{position:absolute;width:26px;height:26px;border-radius:50%;background:rgba(66,133,244,0.28);left:-13px;top:-13px;animation:youAreHerePulse 2s ease-out infinite;}
+  .youAreHereCore{position:absolute;width:13px;height:13px;border-radius:50%;background:#4285F4;border:2px solid #ffffff;left:-6.5px;top:-6.5px;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+  @keyframes youAreHerePulse{0%{transform:scale(0.5);opacity:0.9;}100%{transform:scale(1.8);opacity:0;}}
+  
+  /* Navigation & Controls */
+  #dateBar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
+  #dateBar::-webkit-scrollbar {height:4px;}
+  #dateBar::-webkit-scrollbar-thumb {background:rgba(255,255,255,0.2);border-radius:2px;}
+  
+  /* Accessible 3D Button Enhancements */
+  .dateBtn, #listToggle, .mapNavBtn, .loveBtn, .sendNoteBtn, .visitBtn {
+    box-shadow: 0 2px 0px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.15);
+    border: 1px solid #222222 !important;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .dateBtn:active, #listToggle:active, .mapNavBtn:active, .loveBtn:active, .sendNoteBtn:active, .visitBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0px rgba(0,0,0,0.2);
+  }
+  
+  .dateBtn{flex:0 0 auto;background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:6px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+  .dateBtn.active{background:linear-gradient(to bottom, #ffffff, #e0e0e0);color:#333333;font-weight:700;border-color:#cccccc !important;text-shadow:none;}
+  .dateBtn.noOpenings{opacity:0.4;}
+  
+  #modeRow{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;}
+  #listToggle {background:linear-gradient(to bottom, #555555, #444444);color:#eaeaea;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer;font-weight:500;}
+  
+  /* Map layout */
+  #mapWrap{flex:1 1 auto;position:relative;overflow:hidden;background:#929292;}
+  #mapCanvas{position:absolute;inset:0;background:#929292;}
+  
+  .landmark{position:absolute;font-size:11px;font-weight:700;color:#111111;white-space:nowrap;transform:translate(-50%,-100%);pointer-events:none;background:rgba(255,255,255,0.85);padding:2px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.2);border:0.5px solid rgba(0,0,0,0.1);margin-top:-6px;}
+  .landmarkDot{position:absolute;width:5px;height:5px;border-radius:50%;background:#111111;transform:translate(-50%,-50%);box-shadow:0 0 0 1.5px #ffffff;}
+  
+  .pin {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 100;
+  }
+  .pin.open { background: #2e8b3d; }
+  .pin.present { background: #2c6fbd; }
+  .pin.closed { background: #777777; }
+  .pin.visitedState { background: #6f42c1 !important; }
+  .pin.picked { transform: translate(-50%, -50%) scale(1.2); outline: 1.5px solid #333333; outline-offset: 1px; z-index: 1000 !important; }
+  
+  #compass{position:absolute;top:12px;right:14px;font-size:18px;color:#333333;font-weight:700;z-index:5;background:rgba(255,255,255,0.8);padding:2px 6px;border-radius:4px;}
+  #legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:8px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,0.15);z-index:5;color:#333333;line-height:1.6;}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+  
+  /* Pop-up Info Panel */
+  #panel{position:fixed;left:0;right:0;bottom:0;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.2);padding:16px 18px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:20;max-height:65%;overflow-y:auto;color:#333333;}
+  #panel.show{transform:translateY(0);}
+  #panelClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
+  #panel h2{margin:0 0 4px 0;font-size:16px;color:#333333;text-align:center;}
+  #panel .sub{color:#666;font-size:12px;margin-bottom:12px;}
+  .artistRow{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;color:#333333;}
+  .artistRow .hrs{color:#2e8b3d;font-weight:600;}
+  .closedMsg{color:#888;font-style:italic;font-size:14px;padding:4px 0;}
+  
+  /* Mandatory Gateway Screen Overlay */
+  #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+  #loginOverlay.hide{display:none;}
+  #loginBox{background:#ffffff;border-radius:12px;padding:26px;width:100%;max-width:380px;box-shadow:0 4px 20px rgba(0,0,0,0.3);text-align:center;margin:auto;}
+  #loginBox img{height:52px;width:auto;margin-bottom:10px;}
+  #loginMainTitle{margin:0 0 6px 0;font-size:21px;font-weight:700;color:#333;letter-spacing:0.2px;text-align:center;}
+  #loginBox h2{margin:0 0 8px 0;font-size:18px;color:#333;text-align:center;}
+  #loginBox p{font-size:13px;color:#666;line-height:1.5;margin:0 0 16px 0;}
+  #loginBox input[type="email"]{width:100%;padding:11px;border:1px solid #bbb;border-radius:6px;font-size:14px;box-sizing:border-box;margin-bottom:14px;text-align:center;}
+  #loginBox button.primaryStartBtn{width:100%;padding:12px;background:linear-gradient(to bottom, #2e8b3d, #246e30);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;}
+
+  /* Region Summary Table on Landing Page */
+  #regionSummaryWrap{margin:0 0 16px 0;text-align:left;}
+  #regionSummaryLabel{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;}
+  #regionTable{width:100%;border-collapse:collapse;font-size:12px;}
+  #regionTable th{background:#333333;color:#fff;font-weight:600;padding:6px 6px;text-align:left;}
+  #regionTable th.numCol, #regionTable td.numCol{text-align:center;}
+  #regionTable td{padding:6px 6px;border-bottom:1px solid #eee;color:#333333;}
+  #regionTable tr:last-child td{border-bottom:none;}
+  #regionTable tr.selectedRegionRow td{background:#f3f7fa;font-weight:600;}
+  #regionTable tr.regionRow{cursor:pointer;}
+  #regionTable tr.regionRow:hover td{background:#f7f7f7;}
+  #regionTable th.checkCol, #regionTable td.checkCol{width:22px;text-align:center;padding:6px 4px;}
+  .regionCheckbox{display:inline-block;width:14px;height:14px;border:1.5px solid #999;border-radius:3px;background:#fff;position:relative;vertical-align:middle;}
+  .regionCheckbox.checked{background:#2e8b3d;border-color:#246e30;}
+  .regionCheckbox.checked::after{content:'✓';color:#fff;font-size:10px;font-weight:700;position:absolute;left:1.5px;top:-3px;}
+  #regionDateNote{font-size:11px;color:#888;margin-top:6px;font-style:italic;}
+  #regionSelectError{display:none;font-size:12px;color:#c0392b;margin-top:6px;font-weight:600;}
+
+  /* Core Direction Routing Elements */
+  .routingSection {margin-top:12px; padding:10px 0; border-top:1px dashed #ddd;}
+  .routingTitle {font-size:12px; font-weight:700; margin-bottom:6px; color:#555;}
+  .routingRow {display:flex; gap:8px;}
+  .mapNavBtn {border:none; border-radius:6px; padding:6px 10px; font-size:11px; cursor:pointer; font-weight:600; text-align:center; color:#fff;}
+  .mapNavBtn.apple {background:linear-gradient(to bottom, #555555, #333333);}
+  .mapNavBtn.google {background:linear-gradient(to bottom, #5a8fc5, #4a7fb5);}
+
+  /* Visited Checkmark Controls */
+  .visitActionContainer{margin-top:12px;padding-top:10px;border-top:1px solid #eee;display:flex;}
+  .visitBtn{background:linear-gradient(to bottom, #6f42c1, #5a32a3);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;}
+  .visitBtn.isVisited{background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
+
+  /* Feedback Interactions */
+  .feedbackSection {margin-top:12px;padding-top:12px;border-top:1px solid #eee;}
+  .feedbackRow {display:flex;gap:8px;margin-bottom:8px;}
+  .loveBtn {background:linear-gradient(to bottom, #ff5a5f, #e04a4f);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .loveBtn.loved {background:linear-gradient(to bottom, #e0e0e0, #d6d6d6);color:#555;border-color:#ccc !important;text-shadow:none;}
+  .noteInput {flex:1;padding:7px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;box-sizing:border-box;}
+  .sendNoteBtn {background:linear-gradient(to bottom, #4a7fb5, #3a6fa5);color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;}
+
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity 0.25s ease;z-index:15;}
+  #scrim.show{opacity:1;pointer-events:auto;}
+
+  /* Master List Interface */
+  #listPanel{position:fixed;left:0;right:0;bottom:0;top:8%;background:#ffffff;border-radius:14px 14px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.25);padding:16px 14px 22px;transform:translateY(110%);transition:transform 0.25s ease;z-index:25;overflow-y:auto;color:#333333;}
+  #listPanel.show{transform:translateY(0);}
+  #listPanel h2{margin:6px 0 2px 0;font-size:17px;color:#333333;text-align:center;}
+  #listBannerInstruction{font-size:12px;color:#666;margin-bottom:14px;font-style:italic;background:#f3f7fa;padding:6px 10px;border-radius:6px;border-left:3px solid #4a7fb5;}
+  #listClose{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#888;cursor:pointer;}
+  #listCols{display:flex;gap:12px;flex-direction:column;}
+  .listCol{width:100%;min-width:0;}
+  .listColHead{font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;margin-bottom:10px;color:#ffffff;}
+  .openHead{background:#2e8b3d;}
+  .closedHead{background:#777777;}
+  
+  .listRow{padding:10px 4px;border-bottom:1px solid #eee;}
+  .listRowMainInfo{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .listRowContent{display:flex;align-items:flex-start;gap:8px;cursor:pointer;flex:1;min-width:0;}
+  .listDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:4px;}
+  .listRow .lname{font-weight:600;display:block;color:#333333;font-size:14px;}
+  .listRow .lmeta{color:#666;font-size:12px;margin-top:2px;}
+  .listRowActions {display:flex; gap:6px; margin-top:8px; padding-left:17px;}
+
+  footer {background: #222222; color: #aaaaaa; text-align: center; font-size: 11px; padding: 6px 10px; flex: 0 0 auto; border-top: 1px solid #333333;}
+</style>
+</head>
+<body>
+
+<!-- Mandatory Access Gateway Layer -->
+<div id="loginOverlay">
+  <div id="loginBox">
+    <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA Logo">
+    <h1 id="loginMainTitle">HVA Open Studio 2026</h1>
+    <h2>Welcome to the Trail!</h2>
+    <p>Please enter your email address to launch the interactive trail map and start exploring.</p>
+
+    <div id="regionSummaryWrap">
+      <div id="regionSummaryLabel">Today's Open Studios by Area</div>
+      <table id="regionTable">
+        <thead>
+          <tr>
+            <th class="checkCol"></th>
+            <th>Area</th>
+            <th class="numCol">Open</th>
+            <th class="numCol">Total</th>
+          </tr>
+        </thead>
+        <tbody id="regionTableBody"></tbody>
+      </table>
+      <div id="regionDateNote"></div>
+      <div id="regionSelectError">Please select the region you want to visit above.</div>
+    </div>
+
+    <input type="email" id="userEmail" placeholder="Enter email address" required>
+    <button class="primaryStartBtn" id="loginSubmitBtn">Start the open studio trail</button>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div id="brandRow">
+      <img src="https://www.hvaf.org.uk/wp-content/uploads/2024/12/hvaf-logo-300.png" alt="HVA logo" onerror="this.style.display='none'">
+      <h1 id="headline">HVA Open Studio Trail — 5th to 27th September 2026</h1>
+    </div>
+    <div id="areaSwitchRow">
+      <span id="currentAreaLabel">St Albans</span>
+      <button id="switchAreaBtn">🔄 Switch Area</button>
+    </div>
+    <div id="areaDropdown"></div>
+    <div id="instructions">
+      Choose the date to see what's open:
+    </div>
+    <div id="dateBar"></div>
+    <div id="modeRow">
+      <button id="listToggle">View Studios by Artist Name</button>
+    </div>
+  </header>
+  <div id="mapWrap">
+    <div id="mapCanvas"></div>
+    <div id="compass">N ↑</div>
+    <div id="legend">
+      <span class="dot" style="background:#2e8b3d;"></span>Studio Open <br>
+      <span class="dot" style="background:#2c6fbd;"></span>Studio Open + Artist Present <br>
+      <span class="dot" style="background:#6f42c1;"></span>Studio Visited <br>
+      <span class="dot" style="background:#777777;"></span>Closed
+    </div>
+  </div>
+  <footer>
+    Interactive Design & Copyright © Shivani Mathur
+  </footer>
+</div>
+<div id="scrim"></div>
+<div id="panel">
+  <button id="panelClose">✕</button>
+  <div id="panelBody"></div>
+</div>
+<div id="listPanel">
+  <button id="listClose">✕</button>
+  <h2 id="listTitle">All Artists</h2>
+  <div id="listBannerInstruction">Tap any profile to view details, leave a note, or click a route button to launch directions immediately.</div>
+  <div id="listCols">
+    <div class="listCol">
+      <div class="listColHead openHead">Open Today</div>
+      <div id="listOpen"></div>
+    </div>
+    <div class="listCol">
+      <div class="listColHead closedHead">Closed Today</div>
+      <div id="listClosed"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- TRAIL DATA ARCHITECTURE -----------------------
+const stAlbansLocations = [
+  { postcode:"AL3 5RX", venue:"8", days:{ 12:{"Jenny Robinson":"10-5"}, 13:{"Jenny Robinson":"10-5"}, 19:{"Jenny Robinson":"10-5"}, 20:{"Jenny Robinson":"10-5"} } },
+  { postcode:"AL2 3NE", venue:"9", present:true, days:{ 16:{"Amanda Xuereb":"7-9pm","Bob Notley":"7-9pm"}, 17:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"}, 18:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 19:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 20:{"Amanda Xuereb":"10-4","Bob Notley":"10-4"}, 21:{"Amanda Xuereb":"11-3","Bob Notley":"11-3"} } },
+  { postcode:"AL3 4SE", venue:"9", present:true, days:{ 16:{"Cal Hoy":"7-9pm","Debbie Knight":"7-9pm","Gabrielle Felton":"7-9pm","Irene Maye":"7-9pm","Lisa Reissner":"7-9pm","Lottie Clarke":"7-9pm","Maddy Eaton":"7-9pm","Miroslav Mijatovic":"7-9pm"}, 17:{"Cal Hoy":"11-3","Debbie Knight":"11-3","Gabrielle Felton":"11-3","Irene Maye":"11-3","Lisa Reissner":"11-3","Lottie Clarke":"11-3","Maddy Eaton":"11-3","Miroslav Mijatovic":"11-3"}, 18:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 19:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 20:{"Cal Hoy":"10-4","Debbie Knight":"10-4","Gabrielle Felton":"10-4","Irene Maye":"10-4","Lisa Reissner":"10-4","Lottie Clarke":"10-4","Maddy Eaton":"10-4","Miroslav Mijatovic":"10-4"}, 21:{"Cal Hoy":"11-3","Debbie Knight":"11-3","Gabrielle Felton":"11-3","Irene Maye":"11-3","Lisa Reissner":"11-3","Lottie Clarke":"11-3","Maddy Eaton":"11-3","Miroslav Mijatovic":"11-3"} } },
+  { postcode:"AL3 4SE", venue:"10", days:{ 23:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"}, 24:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"}, 25:{"Abigail Lagden":"10-7","Barbara Burrows":"10-7","Fiona Ryan-Watson":"10-7","Hazel Russell":"10-7","Jackie O'Keeffe":"10-7","Jaiya Bhandari":"10-7","Laura Murgia":"10-7","Mirna Una Majer":"10-7","Rosie Elizabeth Barker":"10-7","Sabine Riechmann":"10-7"}, 26:{"Abigail Lagden":"10-5","Barbara Burrows":"10-5","Fiona Ryan-Watson":"10-5","Hazel Russell":"10-5","Jackie O'Keeffe":"10-5","Jaiya Bhandari":"10-5","Laura Murgia":"10-5","Mirna Una Majer":"10-5","Rosie Elizabeth Barker":"10-5","Sabine Riechmann":"10-5"} } },
+  { postcode:"AL3 4RU", venue:"11", days:{ 10:{"One Creative Ape":"10:30-6"}, 11:{"One Creative Ape":"10:30-6"}, 12:{"One Creative Ape":"10:30-6"}, 13:{"One Creative Ape":"10:30-6"}, 19:{"One Creative Ape":"10:30-6"}, 20:{"One Creative Ape":"10:30-6"} } },
+  { postcode:"AL3 4EH", venue:"12", days:{ 5:{"Philippa Bicknell":"10-5:30"},6:{"Philippa Bicknell":"11-5"},7:{"Philippa Bicknell":"10-5:30"},8:{"Philippa Bicknell":"10-5:30"},9:{"Philippa Bicknell":"10-5:30"},10:{"Philippa Bicknell":"10-5:30"},11:{"Philippa Bicknell":"10-5:30"},12:{"Philippa Bicknell":"11-5"},13:{"Philippa Bicknell":"10-5:30"},15:{"Philippa Bicknell":"10-5:30"},16:{"Philippa Bicknell":"10-5:30"},17:{"Philippa Bicknell":"10-5:30"},18:{"Philippa Bicknell":"10-5:30"},19:{"Philippa Bicknell":"11-4"},20:{"Philippa Bicknell":"11-4"},21:{"Philippa Bicknell":"10-5:30"},22:{"Philippa Bicknell":"10-5:30"},23:{"Philippa Bicknell":"10-5:30"},24:{"Philippa Bicknell":"10-5:30"},25:{"Philippa Bicknell":"10-5:30"},26:{"Philippa Bicknell":"11-4"},27:{"Philippa Bicknell":"11-4"} } },
+  { postcode:"AL1 1RU", venue:"13", days:{ 5:{"Bob Goodall":"2-6"},6:{"Bob Goodall":"2-6"},9:{"Bob Goodall":"2-6"},11:{"Bob Goodall":"2-6"},12:{"Bob Goodall":"2-6"},13:{"Bob Goodall":"2-6"},16:{"Bob Goodall":"2-6"},18:{"Bob Goodall":"2-6"},19:{"Bob Goodall":"2-6"},23:{"Bob Goodall":"2-6"},25:{"Bob Goodall":"2-6"},26:{"Bob Goodall":"2-6"} } },
+  { postcode:"AL1 5BY", venue:"14", days:{ 13:{"AnnaSilvia Dooley":"2-7"},14:{"AnnaSilvia Dooley":"2-5"},15:{"AnnaSilvia Dooley":"2-5"},26:{"AnnaSilvia Dooley":"2-5"},27:{"AnnaSilvia Dooley":"2-5"} } },
+  { postcode:"AL1 5SL", venue:"15", days:{ 16:{"Jessica Ozlo":"11-4"},17:{"Jessica Ozlo":"11-4"},18:{"Jessica Ozlo":"4-8"},19:{"Jessica Ozlo":"11-4"},23:{"Jessica Ozlo":"11-4"},24:{"Jessica Ozlo":"11-4"},25:{"Jessica Ozlo":"4-8"},26:{"Jessica Ozlo":"11-4"} } },
+  { postcode:"AL4 0JQ", venue:"16", days:{ 5:{"TG Art (Toni Gates)":"10-2"},9:{"TG Art (Toni Gates)":"10-2"},16:{"TG Art (Toni Gates)":"10-2"},23:{"TG Art (Toni Gates)":"10-2"} } },
+  { postcode:"AL1 5NA", venue:"17", days:{ 11:{"Marta Nicholson":"11-5"},12:{"Marta Nicholson":"5-7:30"},17:{"Marta Nicholson":"11-5"},18:{"Marta Nicholson":"11-5"},19:{"Marta Nicholson":"5-7:30"},20:{"Marta Nicholson":"5-7:30"},23:{"Marta Nicholson":"11-5"},24:{"Marta Nicholson":"11-5"},25:{"Marta Nicholson":"5-7:30"},26:{"Marta Nicholson":"5-7:30"} } },
+  { postcode:"AL1 4TU", venue:"18", days:{ 11:{"Judith Moule":"10-5"},12:{"Judith Moule":"10-5"},18:{"Judith Moule":"10-5"},19:{"Judith Moule":"10-5"},25:{"Judith Moule":"10-5"},26:{"Judith Moule":"10-5"} } },
+  { postcode:"AL1 5BL", venue:"19", days:{ 5:{"Mandy Johnson":"9-3"},6:{"Mandy Johnson":"9-3"},7:{"Mandy Johnson":"8-3"},8:{"Mandy Johnson":"8-3"},9:{"Mandy Johnson":"8-3"},10:{"Mandy Johnson":"8-3"},11:{"Mandy Johnson":"8-3"},12:{"Mandy Johnson":"9-3"},13:{"Mandy Johnson":"9-3"},14:{"Mandy Johnson":"8-3"},15:{"Mandy Johnson":"8-3"},16:{"Mandy Johnson":"8-3"},17:{"Mandy Johnson":"8-3"},18:{"Mandy Johnson":"8-3"},19:{"Mandy Johnson":"9-3"},20:{"Mandy Johnson":"9-3"},21:{"Mandy Johnson":"8-3"},22:{"Mandy Johnson":"8-3"},23:{"Mandy Johnson":"8-3"},24:{"Mandy Johnson":"8-3"},25:{"Mandy Johnson":"8-3"},26:{"Mandy Johnson":"9-3"},27:{"Mandy Johnson":"9-3"} } },
+  { postcode:"AL1 3GU", venue:"20", days:{ 17:{"Gabriela Moad":"1-4"},18:{"Gabriela Moad":"1-4"},19:{"Gabriela Moad":"1-4"},20:{"Gabriela Moad":"1-4"},21:{"Gabriela Moad":"1-4"},22:{"Gabriela Moad":"1-4"},23:{"Gabriela Moad":"1-4"} } },
+  { postcode:"AL1 4DG", venue:"21", days:{ 17:{"Fiona Booy Ceramics":"5-7"},18:{"Fiona Booy Ceramics":"1-5"},19:{"Fiona Booy Ceramics":"11-4"},24:{"Fiona Booy Ceramics":"5-7"},25:{"Fiona Booy Ceramics":"1-5"},26:{"Fiona Booy Ceramics":"11-4"} } },
+  { postcode:"AL1 4EP", venue:"22", days:{ 5:{"Dave Nelson":"10-6"},6:{"Dave Nelson":"10-6"} } },
+  { postcode:"AL1 4QY", venue:"23", days:{ 5:{"Carrie Cook":"10-4"},6:{"Carrie Cook":"10-4"},9:{"Carrie Cook":"10-4"},10:{"Carrie Cook":"10-4"},11:{"Carrie Cook":"10-4"} } },
+  { postcode:"AL4 9SU", venue:"24", days:{ 5:{"Gerry Wilmer":"11-4:30"},6:{"Gerry Wilmer":"11-4:30"},12:{"Gerry Wilmer":"11-4:30"},13:{"Gerry Wilmer":"11-4:30"},19:{"Gerry Wilmer":"11-4:30"},20:{"Gerry Wilmer":"11-4:30"},26:{"Gerry Wilmer":"11-4:30"},27:{"Gerry Wilmer":"11-4:30"} } },
+  { postcode:"AL2 3NE", venue:"80", days:{ 5:{"Artists In The Wood":"11-4"},9:{"Artists In The Wood":"11-4"},11:{"Artists In The Wood":"11-4"},16:{"Artists In The Wood":"11-4"},19:{"Artists In The Wood":"11-4"},23:{"Artists In The Wood":"11-4"},24:{"Artists In The Wood":"11-4"} } },
+  { postcode:"AL2 2JR", venue:"81", days:{ 6:{"Suzi Clark Artist":"3-5:30"},11:{"Suzi Clark Artist":"11-1:30"},13:{"Suzi Clark Artist":"3-5:30"},19:{"Suzi Clark Artist":"11-1:30"},25:{"Suzi Clark Artist":"11-1:30"} } },
+  { postcode:"AL1 1BZ", venue:"82", days:{ 5:{"Mella Kelly":"11-5"},6:{"Mella Kelly":"11-5"},7:{"Mella Kelly":"12-6"},8:{"Mella Kelly":"12-6"},9:{"Mella Kelly":"12-6"},10:{"Mella Kelly":"12-6"},11:{"Mella Kelly":"12-6"},12:{"Mella Kelly":"11-5"},13:{"Mella Kelly":"11-5"},14:{"Mella Kelly":"12-6"},15:{"Mella Kelly":"12-6"},16:{"Mella Kelly":"12-6"},17:{"Mella Kelly":"12-6"},18:{"Mella Kelly":"12-6"},19:{"Mella Kelly":"11-5"},20:{"Mella Kelly":"11-5"} } },
+  { postcode:"AL3 4SE", venue:"83", days:{ 9:{"Dacorum & Chiltern Potters Guild":"10-5"},10:{"Dacorum & Chiltern Potters Guild":"10-5"},11:{"Dacorum & Chiltern Potters Guild":"10-5"} } }
+];
+
+const COORDS = {
+  "AL3 5RX": [51.764979, -0.334312], "AL2 3NE": [51.715000, -0.335000], "AL3 4SE": [51.754913, -0.351852],
+  "AL3 4RU": [51.754435, -0.346668], "AL3 4EH": [51.751076, -0.341033], "AL1 1RU": [51.748843, -0.338232],
+  "AL1 5BY": [51.744496, -0.318581], "AL1 5SL": [51.741707, -0.314522], "AL4 0JQ": [51.747195, -0.299716],
+  "AL1 5NA": [51.750433, -0.324431], "AL1 4TU": [51.755631, -0.309401], "AL1 5BL": [51.749120, -0.322110], 
+  "AL1 3GU": [51.747780, -0.326073], "AL1 4DG": [51.753256, -0.321017], "AL1 4EP": [51.761051, -0.323452],
+  "AL1 4QY": [51.764832, -0.320602], "AL4 9SU": [51.761231, -0.306149], "AL2 2JR": [51.720994, -0.337782],
+  "AL1 1BZ": [51.750392, -0.340319]
+};
+
+const LANDMARKS = [
+  {name:"St Albans City Centre", lat:51.7530, lng:-0.3360}, {name:"Verulamium Park", lat:51.7495, lng:-0.3450},
+  {name:"London Colney", lat:51.7220, lng:-0.2980}, {name:"Chiswell Green", lat:51.7300, lng:-0.3660},
+  {name:"Marshalswick", lat:51.7620, lng:-0.3070}, {name:"Colney Heath", lat:51.7400, lng:-0.2560},
+  {name:"Sandridge →", lat:51.7810, lng:-0.3200}
+];
+
+// ---- REGION SUMMARY TABLE DATA -----------------------------------------
+// Each region gets its own independent copy of the trail data (its own
+// "page"). Right now every region is seeded with the same St Albans data
+// as a placeholder — swap in real venues/postcodes/artists for each region
+// here once that data is available; nothing else needs to change.
+function cloneStAlbansData(){
+  return JSON.parse(JSON.stringify(stAlbansLocations));
+}
+const REGIONS = [
+  { name:"St Albans",         locations: cloneStAlbansData() },
+  { name:"Dacorum",           locations: cloneStAlbansData() },
+  { name:"North Herts",       locations: cloneStAlbansData() },
+  { name:"East Herts",        locations: cloneStAlbansData() },
+  { name:"Central Herts",     locations: cloneStAlbansData() },
+  { name:"Southwest Herts",   locations: cloneStAlbansData() },
+  { name:"Harpenden",         locations: cloneStAlbansData() }
+];
+
+// ---- SYSTEM APP STATES -----------------------------------------------
+const LAT_MIN=51.700, LAT_MAX=51.790, LNG_MIN=-0.400, LNG_MAX=-0.240;
+const DATES = Array.from({length:23}, (_,i)=>i+5);
+const TRAIL_YEAR = 2026, TRAIL_MONTH_INDEX = 8; // September (0-indexed)
+const DEFAULT_DATE = 5;
+
+let selectedDate = getInitialDate();
+let isListPanelOpen = false; 
+let activeSelectedVenue = null;
+let visitedVenues = [];
+let currentLocations = null;
+let selectedRegionIndex = 0; // St Albans pre-selected by default
+
+let lovedStudios = {}; 
+let studioNotes = {};  
+
+// Checks today's real-world date. If it falls within 5–27 Sept 2026, that
+// day is used as the starting date; otherwise the trail defaults to the 5th.
+function getInitialDate(){
+  const now = new Date();
+  if(now.getFullYear() === TRAIL_YEAR && now.getMonth() === TRAIL_MONTH_INDEX && now.getDate() >= 5 && now.getDate() <= 27){
+    return now.getDate();
+  }
+  return DEFAULT_DATE;
+}
+
+function project(lat,lng,w,h){
+  return [(lng-LNG_MIN)/(LNG_MAX-LNG_MIN)*w, (LAT_MAX-lat)/(LAT_MAX-LAT_MIN)*h];
+}
+function ordinal(n){
+  if (n % 100 >= 11 && n % 100 <= 13) return `${n}th`;
+  switch(n % 10){
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
+}
+
+// ---- REGION SUMMARY TABLE RENDERING -----------------------------------
+function buildRegionTable(){
+  const body = document.getElementById('regionTableBody');
+  body.innerHTML = '';
+  REGIONS.forEach((region, idx)=>{
+    const total = region.locations.length;
+    const open = region.locations.filter(loc=>loc.days[selectedDate]).length;
+    const isSelected = (selectedRegionIndex === idx);
+    const row = document.createElement('tr');
+    row.className = 'regionRow' + (isSelected ? ' selectedRegionRow' : '');
+    row.innerHTML = `
+      <td class="checkCol"><span class="regionCheckbox ${isSelected ? 'checked' : ''}"></span></td>
+      <td>${region.name}</td>
+      <td class="numCol">${open}</td>
+      <td class="numCol">${total}</td>
+    `;
+    row.onclick = () => {
+      selectedRegionIndex = idx;
+      document.getElementById('regionSelectError').style.display = 'none';
+      buildRegionTable();
+    };
+    body.appendChild(row);
+  });
+  document.getElementById('regionDateNote').textContent = `Showing studios open on ${ordinal(selectedDate)} September ${TRAIL_YEAR}.`;
+}
+
+// ---- MANDATORY ACCESS PORTAL ENGINE -----------------------------------
+document.getElementById('loginSubmitBtn').onclick = () => {
+  const emailInput = document.getElementById('userEmail').value.trim();
+  if(!(emailInput && emailInput.includes('@'))) {
+    alert("Please enter a valid email address to start the open studio trail.");
+    return;
+  }
+  if(selectedRegionIndex === null || selectedRegionIndex === undefined) {
+    document.getElementById('regionSelectError').style.display = 'block';
+    return;
+  }
+  startTrail();
+};
+
+function startTrail(){
+  const region = REGIONS[selectedRegionIndex];
+  currentLocations = region.locations;
+  applyRegionToUI(region);
+  document.getElementById('loginOverlay').classList.add('hide');
+  buildDateBar();
+  renderMap();
+  initGeolocation();
+}
+
+function applyRegionToUI(region){
+  document.getElementById('currentAreaLabel').textContent = region.name;
+  document.title = `Herts Visual Arts Open Studios Trail — ${region.name}`;
+}
+
+function switchToRegion(idx){
+  selectedRegionIndex = idx;
+  const region = REGIONS[idx];
+  currentLocations = region.locations;
+  applyRegionToUI(region);
+  visitedVenues = [];
+  lovedStudios = {};
+  studioNotes = {};
+  activeSelectedVenue = null;
+  closePanel();
+  closeAreaDropdown();
+  buildDateBar();
+  renderMap();
+}
+
+function buildAreaDropdown(){
+  const dd = document.getElementById('areaDropdown');
+  dd.innerHTML = '';
+  REGIONS.forEach((region, idx)=>{
+    const opt = document.createElement('div');
+    opt.className = 'areaOption' + (idx===selectedRegionIndex ? ' currentAreaOption' : '');
+    opt.textContent = region.name;
+    opt.onclick = () => switchToRegion(idx);
+    dd.appendChild(opt);
+  });
+}
+function toggleAreaDropdown(){
+  const dd = document.getElementById('areaDropdown');
+  if(dd.classList.contains('show')){
+    closeAreaDropdown();
+  } else {
+    buildAreaDropdown();
+    dd.classList.add('show');
+  }
+}
+function closeAreaDropdown(){
+  document.getElementById('areaDropdown').classList.remove('show');
+}
+document.getElementById('switchAreaBtn').onclick = toggleAreaDropdown;
+
+// ---- YOU ARE HERE GEOLOCATION -------------------------------------------
+let userLocation = null;
+function initGeolocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.watchPosition(
+    (pos) => {
+      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      renderMap();
+    },
+    () => { userLocation = null; },
+    { enableHighAccuracy:true, maximumAge:30000, timeout:10000 }
+  );
+}
+
+function handlePinTap(loc){
+  activeSelectedVenue = loc.venue;
+  openPanel(loc);
+  renderMap();
+}
+
+function toggleVisitedVenue(venueNum) {
+  const idx = visitedVenues.indexOf(venueNum);
+  if (idx > -1) {
+    visitedVenues.splice(idx, 1);
+  } else {
+    visitedVenues.push(venueNum);
+  }
+  renderMap();
+}
+
+function sendStudioAppreciation(venueNum) {
+  lovedStudios[venueNum] = true;
+  alert("Awesome! We've registered your love for this artist. ❤️");
+}
+
+function submitStudioNote(venueNum, message) {
+  if(!message.trim()) return;
+  if(!studioNotes[venueNum]) studioNotes[venueNum] = [];
+  studioNotes[venueNum].push({ name: "A trail visitor", note: message });
+  alert("Your quick note has been delivered straight to the artist!");
+}
+
+function buildDateBar(){
+  const bar = document.getElementById('dateBar');
+  bar.innerHTML = '';
+  DATES.forEach(d=>{
+    const anyOpen = currentLocations.some(l=>l.days[d]);
+    const btn = document.createElement('button');
+    btn.className = 'dateBtn' + (d===selectedDate?' active':'') + (anyOpen?'':' noOpenings');
+    btn.textContent = ordinal(d);
+    btn.onclick = ()=>{ selectedDate = d; refreshDateBar(); renderMap(); if(isListPanelOpen) buildListView(); buildRegionTable(); };
+    btn.id = 'date-'+d;
+    bar.appendChild(btn);
+  });
+}
+function refreshDateBar(){
+  DATES.forEach(d=>{
+    document.getElementById('date-'+d).className = 'dateBtn' + (d===selectedDate?' active':'') + (currentLocations.some(l=>l.days[d])?'':' noOpenings');
+  });
+}
+
+function getDirectionsUrls(postcode) {
+  return {
+    apple: `https://maps.apple.com/?saddr=Current+Location&daddr=${encodeURIComponent(postcode)}&dirflg=d`,
+    google: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(postcode)}`
+  };
+}
+
+function openPanel(loc){
+  const body = document.getElementById('panelBody');
+  const openToday = loc.days[selectedDate];
+  let html = `<h2>Venue ${loc.venue} — ${loc.postcode}</h2><div class="sub">${ordinal(selectedDate)} September${openToday ? (loc.present ? ' · Artist present' : ' · Artwork on display') : ''}</div>`;
+  
+  if(openToday){
+    Object.entries(openToday).forEach(([artist,hrs])=>{
+      html += `<div class="artistRow"><strong>${artist}</strong> — <span class="hrs">${hrs}</span></div>`;
+    });
+  } else {
+    html += `<div class="closedMsg">Closed on ${ordinal(selectedDate)} September.</div>`;
+  }
+  
+  const urls = getDirectionsUrls(loc.postcode);
+  const isVisited = visitedVenues.includes(loc.venue);
+  
+  html += `
+    <div class="routingSection">
+      <div class="routingTitle">Directions From Your Location / Route to Here:</div>
+      <div class="routingRow">
+        <button class="mapNavBtn apple" onclick="window.open('${urls.apple}','_blank')"> Apple Maps Route</button>
+        <button class="mapNavBtn google" onclick="window.open('${urls.google}','_blank')">🗺️ Google Maps Route</button>
+      </div>
+    </div>
+
+    <div class="visitActionContainer">
+      <button class="visitBtn ${isVisited ? 'isVisited' : ''}" id="toggleVisitAction">
+        ${isVisited ? '✓ Studio Visited' : 'Mark as Visited'}
+      </button>
+    </div>
+    
+    <div class="feedbackSection">
+      <div class="feedbackRow">
+        <button class="loveBtn ${lovedStudios[loc.venue] ? 'loved' : ''}" id="loveActionBtn">
+          ${lovedStudios[loc.venue] ? 'Loved! ❤️' : '❤️ Love this Studio!'}
+        </button>
+        <input type="text" class="noteInput" id="noteInputBox" placeholder="Leave a quick note for the artist...">
+        <button class="sendNoteBtn" id="sendNoteActionBtn">Send Note</button>
+      </div>
+    </div>
+  `;
+  
+  body.innerHTML = html;
+  document.getElementById('panel').classList.add('show');
+  document.getElementById('scrim').classList.add('show');
+  
+  document.getElementById('toggleVisitAction').onclick = () => {
+    toggleVisitedVenue(loc.venue);
+    openPanel(loc); 
+  };
+  
+  document.getElementById('loveActionBtn').onclick = () => {
+    if(lovedStudios[loc.venue]) return;
+    sendStudioAppreciation(loc.venue);
+    openPanel(loc);
+  };
+  
+  document.getElementById('sendNoteActionBtn').onclick = () => {
+    const val = document.getElementById('noteInputBox').value;
+    submitStudioNote(loc.venue, val);
+    document.getElementById('noteInputBox').value = '';
+    openPanel(loc);
+  };
+}
+
+function closePanel(){
+  activeSelectedVenue = null;
+  document.getElementById('panel').classList.remove('show');
+  if(!isListPanelOpen) document.getElementById('scrim').classList.remove('show');
+  renderMap();
+}
+document.getElementById('panelClose').onclick = closePanel;
+
+function buildListView(){
+  document.getElementById('listTitle').textContent = `All Artists — ${ordinal(selectedDate)} September`;
+  const openCol = document.getElementById('listOpen');
+  const closedCol = document.getElementById('listClosed');
+  openCol.innerHTML = ''; closedCol.innerHTML = '';
+  
+  currentLocations.forEach(loc=>{
+    const today = loc.days[selectedDate];
+    const row = document.createElement('div');
+    row.className = 'listRow';
+    
+    const urls = getDirectionsUrls(loc.postcode);
+    const isVisited = visitedVenues.includes(loc.venue);
+    
+    if(today){
+      Object.entries(today).forEach(([artist,hrs])=>{
+        row.innerHTML = `
+          <div class="listRowMainInfo">
+            <div class="listRowContent">
+              <span class="listDot" style="background:${isVisited ? '#6f42c1' : (loc.present ? '#2c6fbd' : '#2e8b3d')}"></span>
+              <span><span class="lname">${artist}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} · ${hrs}</span></span>
+            </div>
+          </div>
+          <div class="listRowActions">
+            <button class="mapNavBtn apple" onclick="event.stopPropagation(); window.open('${urls.apple}','_blank')"> Route</button>
+            <button class="mapNavBtn google" onclick="event.stopPropagation(); window.open('${urls.google}','_blank')">🗺️ Route</button>
+          </div>
+        `;
+        row.querySelector('.listRowContent').onclick = ()=>{ closeListPanel(); handlePinTap(loc); };
+        openCol.appendChild(row);
+      });
+    } else {
+      const allArtists = new Set();
+      Object.values(loc.days).forEach(d=>Object.keys(d).forEach(n=>allArtists.add(n)));
+      row.innerHTML = `
+        <div class="listRowMainInfo">
+          <div class="listRowContent" style="flex:1;">
+            <span class="listDot" style="background:${isVisited ? '#6f42c1' : '#777777'}"></span>
+            <span><span class="lname">${[...allArtists].join(', ')}</span><span class="lmeta">Venue ${loc.venue} · ${loc.postcode} (Closed Today)</span></span>
+          </div>
+        </div>
+        <div class="listRowActions">
+          <button class="mapNavBtn apple" onclick="event.stopPropagation(); window.open('${urls.apple}','_blank')"> Route</button>
+          <button class="mapNavBtn google" onclick="event.stopPropagation(); window.open('${urls.google}','_blank')">🗺️ Route</button>
+        </div>
+      `;
+      row.querySelector('.listRowContent').onclick = () => { closeListPanel(); handlePinTap(loc); };
+      closedCol.appendChild(row);
+    }
+  });
+}
+
+function openListPanel(){
+  isListPanelOpen = true;
+  buildListView();
+  renderMap(); 
+  document.getElementById('listPanel').classList.add('show');
+  document.getElementById('scrim').classList.add('show');
+}
+function closeListPanel(){
+  isListPanelOpen = false;
+  renderMap(); 
+  document.getElementById('listPanel').classList.remove('show');
+  document.getElementById('scrim').classList.remove('show');
+}
+document.getElementById('listToggle').onclick = openListPanel;
+document.getElementById('listClose').onclick = closeListPanel;
+document.getElementById('scrim').onclick = ()=>{ closePanel(); closeListPanel(); };
+
+function renderMap(){
+  if(!currentLocations) return;
+  const canvas = document.getElementById('mapCanvas');
+  canvas.innerHTML = '';
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+
+  if(!isListPanelOpen) {
+    LANDMARKS.forEach(lm=>{
+      const [x,y] = project(lm.lat, lm.lng, w, h);
+      const dot = document.createElement('div');
+      dot.className = 'landmarkDot';
+      dot.style.left = x+'px'; dot.style.top = y+'px';
+      canvas.appendChild(dot);
+      const label = document.createElement('div');
+      label.className = 'landmark';
+      label.textContent = lm.name;
+      label.style.left = x+'px'; label.style.top = (y-10)+'px';
+      canvas.appendChild(label);
+    });
+  }
+
+  const computedPositions = {};
+
+  currentLocations.forEach((loc, index)=>{
+    const openToday = loc.days[selectedDate];
+    if(isListPanelOpen && !openToday) return;
+
+    const c = COORDS[loc.postcode];
+    if(!c) return;
+    let [x,y] = project(c[0], c[1], w, h);
+    
+    const posKey = `${Math.round(x)},${Math.round(y)}`;
+    if (computedPositions[posKey]) {
+      computedPositions[posKey]++;
+      x += (computedPositions[posKey] * 5) - 5;
+    } else {
+      computedPositions[posKey] = 1;
+    }
+
+    const isPicked = (activeSelectedVenue === loc.venue);
+    const isVisited = visitedVenues.includes(loc.venue);
+    
+    let stateClass = 'closed';
+    if(openToday) stateClass = loc.present ? 'present' : 'open';
+    if(isVisited) stateClass = 'visitedState';
+    
+    const pin = document.createElement('div');
+    pin.className = 'pin ' + stateClass + (isPicked ? ' picked' : '');
+    pin.style.left = x+'px'; pin.style.top = y+'px';
+    pin.style.zIndex = 100 + index;
+    pin.textContent = isVisited ? '✓' : loc.venue;
+    
+    pin.onclick = ()=>handlePinTap(loc);
+    canvas.appendChild(pin);
+  });
+
+  if(userLocation && userLocation.lat >= LAT_MIN && userLocation.lat <= LAT_MAX && userLocation.lng >= LNG_MIN && userLocation.lng <= LNG_MAX){
+    const [ux, uy] = project(userLocation.lat, userLocation.lng, w, h);
+    const dot = document.createElement('div');
+    dot.id = 'youAreHereDot';
+    dot.style.left = ux+'px';
+    dot.style.top = uy+'px';
+    dot.innerHTML = `<div class="youAreHereHalo"></div><div class="youAreHereCore"></div>`;
+    canvas.appendChild(dot);
+  }
+}
+
+buildRegionTable();
+window.addEventListener('resize', renderMap);
+</script>
+</body>
+</html>
