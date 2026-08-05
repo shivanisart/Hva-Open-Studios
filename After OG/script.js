@@ -27,7 +27,7 @@ let routePlannerState = {
 
 async function initSupabase(){
   if(!supabaseClient) {
-    console.warn("Supabase is not configured yet — feedback (loves/comments/visited) will not be saved. Fill in SUPABASE_URL and SUPABASE_ANON_KEY in script.js.");
+    console.warn("Supabase is not configured yet â feedback (loves/comments/visited) will not be saved. Fill in SUPABASE_URL and SUPABASE_ANON_KEY in script.js.");
     return;
   }
   try {
@@ -185,7 +185,7 @@ function renderMap(){
 
     const icon = L.divIcon({
       className: "",
-      html: "<div class=\"pinTapArea\"><div class=\"pin " + stateClass + (isPicked ? " picked" : "") + "\">" + (isVisited ? "✓" : loc.venue) + "</div></div>",
+      html: "<div class=\"pinTapArea\"><div class=\"pin " + stateClass + (isPicked ? " picked" : "") + "\">" + (isVisited ? "â" : loc.venue) + "</div></div>",
       iconSize: [30, 30],
       iconAnchor: (function(){
         const off = markerPixelOffsets[loc.venue];
@@ -428,7 +428,7 @@ function displayRoute(){
   // Build title
   const title = routePlannerState.selectedVenues.length + " venue" + (routePlannerState.selectedVenues.length !== 1 ? "s" : "");
   const type = routePlannerState.isLoop ? "Loop" : "Journey";
-  document.getElementById("routeDisplayTitle").textContent = title + " — " + type;
+  document.getElementById("routeDisplayTitle").textContent = title + " â " + type;
   
   // Calculate total distance
   let totalDist = 0;
@@ -442,18 +442,18 @@ function displayRoute(){
   if(routePlannerState.savedRoute){
     document.getElementById("routeSaveEmail").value = routePlannerState.savedRoute.email;
     document.getElementById("routeEmailBanner").style.background = "#ffebee";
-    document.getElementById("routeEmailBannerText").textContent = "✅ Route saved to your account!";
+    document.getElementById("routeEmailBannerText").textContent = "â Route saved to your account!";
     document.getElementById("routeEmailBannerText").style.color = "#c62828";
-    document.getElementById("routeSaveAndStartBtn").textContent = "❤️ Route Saved!";
+    document.getElementById("routeSaveAndStartBtn").textContent = "â¤ï¸ Route Saved!";
     document.getElementById("routeSaveAndStartBtn").style.background = "#ff5a5f";
     document.getElementById("routeSaveAndStartBtn").disabled = true;
     document.getElementById("routeSaveEmail").disabled = true;
     document.getElementById("routeSaveEmail").style.opacity = "0.7";
   } else {
     document.getElementById("routeEmailBanner").style.background = "#fff3e0";
-    document.getElementById("routeEmailBannerText").textContent = "💡 Save this route with your email to access it anytime!";
+    document.getElementById("routeEmailBannerText").textContent = "ð¡ Save this route with your email to access it anytime!";
     document.getElementById("routeEmailBannerText").style.color = "#e65100";
-    document.getElementById("routeSaveAndStartBtn").textContent = "❤️ Save Route";
+    document.getElementById("routeSaveAndStartBtn").textContent = "â¤ï¸ Save Route";
     document.getElementById("routeSaveAndStartBtn").style.background = "#ff5a5f";
     document.getElementById("routeSaveAndStartBtn").disabled = false;
     document.getElementById("routeSaveEmail").disabled = false;
@@ -502,7 +502,7 @@ function renderRouteOnMap(){
   const bounds = routePlannerState.routeCoordinates.map(c => [c.lat, c.lng]);
   leafletMap.fitBounds(bounds, { padding: [30, 30], animate: true });
   
-  // Draw route line — RED if saved, GREEN if not
+  // Draw route line â RED if saved, GREEN if not
   const routeColor = routePlannerState.savedRoute ? "#ff5a5f" : "#2e8b3d";
   const routeLine = L.polyline(bounds, { color: routeColor, weight: 3, opacity: 0.7 }).addTo(leafletMap);
   
@@ -579,7 +579,7 @@ document.getElementById("shareTrailBtn").onclick = function(){
   const shareUrl = window.location.href;
   const isRealUrl = /^https?:\/\//i.test(shareUrl);
   if(!isRealUrl){
-    alert("Sharing only works once this page is published on the real website — right now you're viewing a preview copy, which doesn't have a real web address yet to share.");
+    alert("Sharing only works once this page is published on the real website â right now you're viewing a preview copy, which doesn't have a real web address yet to share.");
     return;
   }
   const shareText = "Link to 2026 Open Studio Trail";
@@ -603,7 +603,7 @@ document.getElementById("copyShareLinkBtn").onclick = function(){
   const url = btn.dataset.url || window.location.href;
   function showCopied(){
     const original = btn.textContent;
-    btn.textContent = "✓ Copied!";
+    btn.textContent = "â Copied!";
     setTimeout(function(){ btn.textContent = original; }, 2000);
   }
   const tempInput = document.createElement("textarea");
@@ -642,7 +642,7 @@ function initLeafletMap(){
   leafletMap = L.map("mapCanvas").setView([51.82, -0.5], 10);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: "© OpenStreetMap contributors"
+    attribution: "Â© OpenStreetMap contributors"
   }).addTo(leafletMap);
   markersLayer = L.layerGroup().addTo(leafletMap);
   userDotLayer = L.layerGroup().addTo(leafletMap);
@@ -927,12 +927,12 @@ document.getElementById("routeSaveAndStartBtn").onclick = async function(){
   const bannerText = document.getElementById("routeEmailBannerText");
   const emailInput = document.getElementById("routeSaveEmail");
   
-  saveBtn.textContent = "❤️ Route Saved!";
+  saveBtn.textContent = "â¤ï¸ Route Saved!";
   saveBtn.style.background = "#ff5a5f";
   saveBtn.disabled = true;
   
   emailBanner.style.background = "#ffebee";
-  bannerText.textContent = "✅ Route saved to your account!";
+  bannerText.textContent = "â Route saved to your account!";
   bannerText.style.color = "#c62828";
   
   emailInput.disabled = true;
