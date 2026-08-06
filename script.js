@@ -850,9 +850,8 @@ function updateTopSummary(){
 }
 
 function closeAllSheets(){
-  ["dateSheet","typeSheet","trailSheet","routePlannerSheet"].forEach(function(id){
-    const el = document.getElementById(id);
-    if(el) el.classList.remove("show");
+  ["dateSheet","typeSheet","trailSheet"].forEach(function(id){
+    document.getElementById(id).classList.remove("show");
   });
   document.getElementById("scrim").classList.remove("show");
 }
@@ -911,39 +910,16 @@ function buildTrailSheet(){
   const lovedCount = Object.values(lovedStudios).filter(Boolean).length;
   const totalToday = countOpenOn(selectedDate);
   const stillToVisit = Math.max(totalToday - visitedCount, 0);
-  const savedRoutesCount = userRoutes ? userRoutes.length : 0;
-  
-  let html = "<div class=\"trailStatRow\"><span class=\"lbl\">\u2713 Visited</span><span class=\"val\">" + visitedCount + "</span></div>" +
-    "<div class=\"trailStatRow\"><span class=\"lbl\">\u2661 Saved (Artists)</span><span class=\"val\">" + lovedCount + "</span></div>" +
+  document.getElementById("trailSheetBody").innerHTML =
+    "<div class=\"trailStatRow\"><span class=\"lbl\">\u2713 Visited</span><span class=\"val\">" + visitedCount + "</span></div>" +
+    "<div class=\"trailStatRow\"><span class=\"lbl\">\u2661 Saved</span><span class=\"val\">" + lovedCount + "</span></div>" +
     "<div class=\"trailStatRow\"><span class=\"lbl\">\u2192 Still to visit today</span><span class=\"val\">" + stillToVisit + "</span></div>" +
-    "<div class=\"trailStatRow\" style=\"background:#f0f0f0; border-radius:6px; padding:8px;\"><span class=\"lbl\">📍 Saved Routes</span><span class=\"val\" style=\"font-weight:bold;color:#ff5a5f;\">" + savedRoutesCount + "</span></div>";
-  
-  // Show saved routes
-  if(savedRoutesCount > 0){
-    html += "<div style=\"margin-top:12px; border-top:1px solid #ddd; padding-top:12px;\">";
-    html += "<h3 style=\"margin:0 0 8px 0; font-size:14px;\">Your Saved Routes:</h3>";
-    userRoutes.forEach(function(route, idx){
-      const venueList = (route.venues || []).join(", ");
-      html += "<div style=\"padding:8px; background:#f9f9f9; border-radius:4px; margin-bottom:6px; border-left:4px solid #ff5a5f;\">" +
-        "<div style=\"font-weight:bold; font-size:13px;\">Route " + (idx + 1) + "</div>" +
-        "<div style=\"font-size:12px; color:#666;\">Venues: " + venueList + "</div>" +
-        "</div>";
-    });
-    html += "</div>";
-  } else {
-    html += "<div style=\"margin-top:12px; padding:12px; background:#f0f0f0; border-radius:6px; text-align:center; color:#999; font-size:13px;\">" +
-      "No saved routes yet. Use the <strong>Plan Visits</strong> button to create one!" +
-      "</div>";
-  }
-  
-  html += "<div class=\"trailNote\" style=\"margin-top:12px;\">Tapping the heart saves an artist to your list. Marking a venue as visited adds it to your visited total. To keep these saved across visits, please enter your email.</div>" +
+    "<div class=\"trailNote\">Tapping the heart saves an artist to your list. Marking a venue as visited adds it to your visited total. To keep these saved across visits, please enter your email.</div>" +
     "<button id=\"trailEnterEmailBtn\" class=\"sheetDoneBtn\" style=\"width:100%;margin-top:8px;\">Enter email</button>" +
     "<div id=\"trailEmailRow\" style=\"display:none;margin-top:8px;\">" +
       "<input type=\"email\" id=\"trailEmailInput\" placeholder=\"Enter email address\" style=\"width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;margin-bottom:6px;\">" +
       "<button id=\"trailEmailSaveBtn\" class=\"sheetDoneBtn\" style=\"width:100%;\">Save</button>" +
     "</div>";
-  
-  document.getElementById("trailSheetBody").innerHTML = html;
 
   document.getElementById("trailEnterEmailBtn").onclick = function(){
     document.getElementById("trailEmailRow").style.display = "block";
@@ -1379,11 +1355,6 @@ function closeGalleryPanel(){
   document.getElementById("galleryPanel").classList.remove("show");
   document.getElementById("scrim").classList.remove("show");
 }
-function openRoutePlanner(){
-  buildRoutePlannerSheet();
-  document.getElementById("routePlannerSheet").classList.add("show");
-  document.getElementById("scrim").classList.add("show");
-}
 document.getElementById("galleryToggle").onclick = openGalleryPanel;
 document.getElementById("galleryClose").onclick = closeGalleryPanel;
 document.getElementById("galleryScopeToday").onclick = function(){
@@ -1401,7 +1372,7 @@ document.getElementById("galleryScopeAll").onclick = function(){
 
 document.getElementById("listToggle").onclick = openListPanel;
 document.getElementById("planVisitsBtn").onclick = openRoutePlanner;
-document.getElementById("galleryToggle").onclick = openGalleryPanel;
+document.getElementById("routePlannerClose").onclick = closeAllSheets;
 document.getElementById("dateSummaryBtn").onclick = function(){ buildDateSheet(); openSheet("dateSheet"); };
 document.getElementById("artTypeFilterBtn").onclick = function(){ buildTypeSheet(); openSheet("typeSheet"); };
 document.getElementById("closedToggleBtn").onclick = function(){
@@ -1412,7 +1383,6 @@ document.getElementById("closedToggleBtn").onclick = function(){
 };
 document.getElementById("myTrailBtn").onclick = function(){ buildTrailSheet(); openSheet("trailSheet"); };
 document.getElementById("trailSheetClose").onclick = closeAllSheets;
-document.getElementById("routePlannerClose").onclick = closeAllSheets;
 document.getElementById("resetFiltersBtn").onclick = function(){
   typeFilter.clear();
   statusFilter = "open";
@@ -1474,192 +1444,162 @@ function optimizeRoute(startLat, startLng, venues){
 }
 
 // Open route planner
+function openRoutePlanner(){
+  closeAllSheets();
+  buildRoutePlannerSheet();
+  openSheet("routePlannerSheet");
+}
 
 // Build route planner UI
 function buildRoutePlannerSheet(){
   const body = document.getElementById("routePlannerBody");
-  body.innerHTML = `<div style="padding:20px;"><p style="font-size:16px; font-weight:bold; margin:0 0 12px 0;">📍 Plan Your Route</p><p style="color:#666; font-size:14px; line-height:1.5;">Route planner UI goes here</p></div>`;
-}
-
-// Setup live venue search
-function setupVenueSearch(container, allVenues){
-  const searchInput = container.querySelector("#routeVenueSearch");
-  const resultsDiv = container.querySelector("#routeVenueSearchResults");
+  const venues = currentLocations || [];
   
-  if(!searchInput) return;
-  
-  searchInput.oninput = function(){
-    const query = this.value.trim().toLowerCase();
-    
-    if(query.length === 0){
-      resultsDiv.style.display = "none";
-      return;
-    }
-    
-    // Filter venues by venue number or artist name (same logic as main search)
-    const matches = allVenues.filter(function(v){
-      const venueNum = String(v.venue).toLowerCase();
-      
-      // Get all artist names from this venue's days
-      let hasMatchingArtist = false;
-      if(v.days){
-        Object.values(v.days).forEach(function(dayArtists){
-          Object.keys(dayArtists).forEach(function(artistName){
-            if(artistName.toLowerCase().includes(query)){
-              hasMatchingArtist = true;
-            }
-          });
-        });
-      }
-      
-      return venueNum.includes(query) || hasMatchingArtist;
+  if(currentRouteSelection.isEditing){
+    // Edit mode: show edit screen
+    body.innerHTML = `
+      <div style="padding:16px;">
+        <p>Editing route. Select up to 5 venues:</p>
+        <div id="routeVenueSelection" style="max-height:300px; overflow-y:auto; margin:12px 0;">
+        </div>
+        <div style="margin-top:16px; display:flex; gap:8px;">
+          <button id="routeSaveBtn" style="flex:1; padding:12px; background:#ff5a5f; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Save Route (Red)</button>
+          <button id="routeCancelEditBtn" style="flex:1; padding:12px; background:#999; color:white; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+    `;
+    buildVenueSelectionList(body.querySelector("#routeVenueSelection"), venues);
+    document.getElementById("routeSaveBtn").onclick = function(){ saveRoute(); };
+    document.getElementById("routeCancelEditBtn").onclick = function(){ 
+      currentRouteSelection.isEditing = false;
+      closeAllSheets(); 
+    };
+  } else if(currentRouteSelection.isSaved && currentRouteSelection.venues.length > 0){
+    // Saved route view: show edit option
+    body.innerHTML = `
+      <div style="padding:16px;">
+        <h3 style="margin:0 0 12px 0;">Your Route (${currentRouteSelection.venues.length} venues)</h3>
+        <div id="routeVenuesDisplay" style="margin:12px 0;"></div>
+        <div style="margin-top:16px; display:flex; gap:8px;">
+          <button id="routeEditBtn" style="flex:1; padding:12px; background:#2e8b3d; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Edit Route</button>
+          <button id="routeDeleteBtn" style="flex:1; padding:12px; background:#ff5a5f; color:white; border:none; border-radius:6px; cursor:pointer;">Delete</button>
+        </div>
+      </div>
+    `;
+    const display = body.querySelector("#routeVenuesDisplay");
+    currentRouteSelection.venues.forEach(function(v, i){
+      const div = document.createElement("div");
+      div.style.padding = "8px";
+      div.style.background = "#f0f0f0";
+      div.style.marginBottom = "6px";
+      div.style.borderRadius = "4px";
+      div.innerHTML = `${i+1}. Venue ${v.venue} - ${(v.lat && v.lng) ? v.lat.toFixed(3) : 'N/A'}`;
+      display.appendChild(div);
     });
-    
-    // Display results
-    resultsDiv.innerHTML = "";
-    if(matches.length > 0){
-      matches.forEach(function(v){
-        const resultDiv = document.createElement("div");
-        resultDiv.style.padding = "10px";
-        resultDiv.style.borderBottom = "1px solid #eee";
-        resultDiv.style.cursor = "pointer";
-        resultDiv.style.background = "#fafafa";
-        resultDiv.onmouseover = function(){ this.style.background = "#f0f0f0"; };
-        resultDiv.onmouseout = function(){ this.style.background = "#fafafa"; };
+    document.getElementById("routeEditBtn").onclick = function(){ 
+      currentRouteSelection.isEditing = true;
+      buildRoutePlannerSheet(); 
+    };
+    document.getElementById("routeDeleteBtn").onclick = deleteRoute;
+  } else {
+    // Initial route creation
+    body.innerHTML = `
+      <div style="padding:16px;">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:6px;">Start Point:</label>
+          <input type="text" id="routeStartPostcode" placeholder="Enter postcode or use current location" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
+          <button id="routeUseCurrentBtn" style="margin-top:6px; width:100%; padding:8px; background:#2e8b3d; color:white; border:none; border-radius:4px; cursor:pointer;">Use Current Location</button>
+        </div>
         
-        // Get artist names from this venue
-        let artistList = "";
-        if(v.days){
-          const artistNames = new Set();
-          Object.values(v.days).forEach(function(dayArtists){
-            Object.keys(dayArtists).forEach(function(n){ artistNames.add(n); });
-          });
-          artistList = Array.from(artistNames).slice(0, 3).join(", ");
-          if(artistNames.size > 3) artistList += " ...";
-        }
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:6px;">Select Venues (up to 5):</label>
+          <div id="routeVenueSelection" style="max-height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:4px; padding:8px;">
+          </div>
+        </div>
         
-        const artistDisplay = artistList ? `<br><small style="color:#666;">${artistList}</small>` : "";
-        resultDiv.innerHTML = `<strong>Venue ${v.venue}</strong>${artistDisplay}`;
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:bold; margin-bottom:6px;">End Point (optional):</label>
+          <input type="text" id="routeEndPostcode" placeholder="Enter postcode" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
+        </div>
         
-        resultDiv.onclick = function(){
-          // Check if already selected
-          if(currentRouteSelection.venues.some(function(rv){ return rv.venue === v.venue; })){
-            alert("Already selected");
-            return;
-          }
-          
-          // Check limit
-          if(currentRouteSelection.venues.length >= 5){
-            alert("Maximum 5 venues");
-            return;
-          }
-          
-          // Add to selection
-          currentRouteSelection.venues.push(v);
-          searchInput.value = "";
-          resultsDiv.style.display = "none";
-          buildSelectedVenuesList(container.querySelector("#routeSelectedVenues"));
-        };
+        <div id="routeAuthMessage" style="padding:12px; background:#ffeaea; border-radius:4px; margin-bottom:12px; color:#cc0000; display:none; font-size:14px;">
+          Login to save your route
+        </div>
         
-        resultsDiv.appendChild(resultDiv);
-      });
-      resultsDiv.style.display = "block";
-    } else {
-      resultsDiv.innerHTML = "<div style='padding:10px; color:#999;'>No venues found</div>";
-      resultsDiv.style.display = "block";
-    }
-  };
-}
-
-// Build display of selected venues
-function buildSelectedVenuesList(container){
-  container.innerHTML = "";
-  
-  // Update the count in the label
-  const countSpan = document.getElementById("routeSelectedCount");
-  if(countSpan){
-    countSpan.textContent = currentRouteSelection.venues.length;
-  }
-  
-  if(currentRouteSelection.venues.length === 0){
-    container.innerHTML = "<small style='color:#999; font-size:12px;'>No venues selected yet</small>";
-    return;
-  }
-  
-  currentRouteSelection.venues.forEach(function(v, i){
-    const div = document.createElement("div");
-    div.style.padding = "8px";
-    div.style.background = "#2e8b3d";
-    div.style.color = "white";
-    div.style.marginBottom = "6px";
-    div.style.borderRadius = "4px";
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.fontSize = "13px";
-    div.style.boxSizing = "border-box";
+        <button id="routeOptimizeBtn" style="width:100%; padding:12px; background:#2e8b3d; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; margin-bottom:8px;">Optimize & Save Route</button>
+      </div>
+    `;
     
-    const label = document.createElement("span");
+    buildVenueSelectionList(body.querySelector("#routeVenueSelection"), venues);
     
-    // Get artist names from venue.days
-    let artistList = "";
-    if(v.days){
-      const artistNames = new Set();
-      Object.values(v.days).forEach(function(dayArtists){
-        Object.keys(dayArtists).forEach(function(n){ artistNames.add(n); });
-      });
-      artistList = Array.from(artistNames).slice(0, 2).join(", ");
-    }
-    
-    const displayText = artistList 
-      ? (i + 1) + ". Venue " + v.venue + " — " + artistList
-      : (i + 1) + ". Venue " + v.venue;
-    label.textContent = displayText;
-    label.style.flex = "1";
-    label.style.minWidth = "0";
-    label.style.overflow = "hidden";
-    label.style.textOverflow = "ellipsis";
-    
-    const removeBtn = document.createElement("button");
-    removeBtn.textContent = "✕";
-    removeBtn.style.background = "none";
-    removeBtn.style.border = "none";
-    removeBtn.style.cursor = "pointer";
-    removeBtn.style.fontSize = "16px";
-    removeBtn.style.color = "white";
-    removeBtn.style.padding = "0 4px";
-    removeBtn.style.flexShrink = "0";
-    removeBtn.onclick = function(e){
-      e.preventDefault();
-      currentRouteSelection.venues.splice(i, 1);
-      buildSelectedVenuesList(container);
+    document.getElementById("routeUseCurrentBtn").onclick = function(){
+      if(userLocation){
+        currentRouteSelection.startPoint = { lat: userLocation.lat, lng: userLocation.lng };
+        document.getElementById("routeStartPostcode").value = "Current location (" + userLocation.lat.toFixed(3) + ", " + userLocation.lng.toFixed(3) + ")";
+      }
     };
     
-    div.appendChild(label);
-    div.appendChild(removeBtn);
-    container.appendChild(div);
-  });
+    document.getElementById("routeOptimizeBtn").onclick = function(){
+      if(currentRouteSelection.venues.length === 0){
+        alert("Please select at least 1 venue.");
+        return;
+      }
+      if(!currentRouteSelection.startPoint){
+        alert("Please set a start point.");
+        return;
+      }
+      
+      // Optimize route
+      currentRouteSelection.venues = optimizeRoute(
+        currentRouteSelection.startPoint.lat,
+        currentRouteSelection.startPoint.lng,
+        currentRouteSelection.venues
+      );
+      
+      // Save to Supabase
+      if(currentUserId){
+        saveRoute();
+      } else {
+        document.getElementById("routeAuthMessage").style.display = "block";
+      }
+    };
+  }
 }
 
-// Build venue selection checkboxes (deprecated - kept for compatibility)
+// Build venue selection checkboxes
 function buildVenueSelectionList(container, venues){
-  // This is now handled by setupVenueSearch
+  container.innerHTML = "";
+  venues.forEach(function(v){
+    const label = document.createElement("label");
+    label.style.display = "block";
+    label.style.padding = "8px";
+    label.style.cursor = "pointer";
+    
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = currentRouteSelection.venues.some(function(rv){ return rv.venue === v.venue; });
+    checkbox.onchange = function(){
+      if(checkbox.checked){
+        if(currentRouteSelection.venues.length < 5){
+          currentRouteSelection.venues.push(v);
+        } else {
+          checkbox.checked = false;
+          alert("Maximum 5 venues allowed");
+        }
+      } else {
+        currentRouteSelection.venues = currentRouteSelection.venues.filter(function(rv){ return rv.venue !== v.venue; });
+      }
+    };
+    
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(" Venue " + v.venue));
+    container.appendChild(label);
+  });
 }
 
 // Save route to Supabase
 async function saveRoute(){
-  console.log("saveRoute called. currentUserId:", currentUserId);
-  
-  if(!supabaseClient){
-    alert("ERROR: Supabase not initialized. Please refresh the page.");
-    return;
-  }
-  
-  // If not logged in, prompt for email
-  if(!currentUserId){
-    alert("Please log in at the top of the app with your email to save this route.");
-    return;
-  }
+  if(!supabaseClient || !currentUserId) return;
   
   const routeData = {
     user_id: currentUserId,
@@ -1669,89 +1609,40 @@ async function saveRoute(){
     is_saved: true
   };
   
-  console.log("Attempting to save route:", routeData);
-  
-  try {
-    if(currentRouteSelection.routeId){
-      // Update existing
-      console.log("Updating existing route:", currentRouteSelection.routeId);
-      const { error } = await supabaseClient
-        .from("user_routes")
-        .update(routeData)
-        .eq("id", currentRouteSelection.routeId);
-      
-      if(error){
-        console.error("Failed to update route:", error);
-        alert("ERROR updating route:\n" + error.message);
-      } else {
-        console.log("Route updated successfully");
-        currentRouteSelection.isSaved = true;
-        currentRouteSelection.isEditing = false;
-        alert("✅ Route updated!");
-        displayRouteOnMap();
-        closeAllSheets();
-        loadUserRoutes();
-      }
+  if(currentRouteSelection.routeId){
+    // Update existing
+    const { error } = await supabaseClient
+      .from("user_routes")
+      .update(routeData)
+      .eq("id", currentRouteSelection.routeId);
+    
+    if(error){
+      console.error("Failed to update route:", error);
+      alert("Error saving route");
     } else {
-      // Create new
-      console.log("Creating new route");
-      const { data, error } = await supabaseClient
-        .from("user_routes")
-        .insert([routeData])
-        .select();
-      
-      if(error){
-        console.error("Failed to save route:", error);
-        alert("ERROR saving route:\n" + error.message + "\n\nMake sure the user_routes table exists.");
-      } else if(data && data.length > 0){
-        console.log("Route saved successfully:", data[0]);
-        currentRouteSelection.routeId = data[0].id;
-        currentRouteSelection.isSaved = true;
-        alert("✅ Route saved!");
-        displayRouteOnMap();
-        closeAllSheets();
-        loadUserRoutes();
-      } else {
-        console.warn("Route saved but no data returned");
-        alert("Route saved but no confirmation received.");
-      }
+      currentRouteSelection.isSaved = true;
+      currentRouteSelection.isEditing = false;
+      closeAllSheets();
+      alert("Route saved!");
     }
-  } catch(err) {
-    console.error("Exception saving route:", err);
-    alert("EXCEPTION saving route:\n" + err.message);
+  } else {
+    // Create new
+    const { data, error } = await supabaseClient
+      .from("user_routes")
+      .insert([routeData])
+      .select();
+    
+    if(error){
+      console.error("Failed to save route:", error);
+      alert("Error saving route");
+    } else if(data && data.length > 0){
+      currentRouteSelection.routeId = data[0].id;
+      currentRouteSelection.isSaved = true;
+      closeAllSheets();
+      alert("Route saved!");
+      loadUserRoutes(); // Refresh list
+    }
   }
-}
-
-// Display route on map with line and red highlights
-function displayRouteOnMap(){
-  if(!leafletMap || !markersLayer || currentRouteSelection.venues.length === 0) return;
-  
-  // Draw line connecting venues
-  const latlngs = currentRouteSelection.venues.map(function(v){
-    return [v.lat, v.lng];
-  });
-  
-  if(latlngs.length > 1){
-    const polyline = L.polyline(latlngs, {
-      color: '#ff5a5f',
-      weight: 3,
-      opacity: 0.8,
-      dashArray: '5, 5'
-    }).addTo(leafletMap);
-  }
-  
-  // Highlight venue markers in red
-  currentRouteSelection.venues.forEach(function(v){
-    const redMarker = L.circleMarker([v.lat, v.lng], {
-      radius: 12,
-      fillColor: '#ff5a5f',
-      color: '#cc0000',
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.9,
-      zIndex: 500
-    }).addTo(leafletMap);
-  });
 }
 
 // Delete route from Supabase
