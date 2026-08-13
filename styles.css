@@ -204,7 +204,7 @@ html,body{margin:0;padding:0;min-height:100%;font-family:"Helvetica Neue",Helvet
 
   .topSummaryBtn .openCountNum{color:#000000;font-weight:800;font-size:14px;letter-spacing:0.2px;}
   .topSummaryBtn .chev{font-size:11px;color:#666;position:absolute;right:14px;top:50%;transform:translateY(-50%);}
-  .tapHintText{font-size:10px;color:#666;font-weight:600;white-space:nowrap;display:inline-block;}
+  .tapHintText{font-size:14px;color:#666;font-weight:600;white-space:nowrap;display:inline-block;}
 
   .tapHintText{font-size:8px;color:#666;font-weight:600;white-space:nowrap;text-align:right;flex-shrink:0;}
   .filterBtn.active{background:#000000;color:#ffffff;}
