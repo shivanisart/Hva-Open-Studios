@@ -85,6 +85,26 @@ async function loadFeedbackCounts(){
   }
 }
 
+// ---- Lightweight usage analytics ----
+// Fire-and-forget inserts into the `events` table (see
+// supabase_schema_events.sql). Never blocks the UI and never throws.
+function detectDevice(){
+  const ua = navigator.userAgent || "";
+  if(/tablet|ipad/i.test(ua)) return "tablet";
+  if(/mobi|android|iphone/i.test(ua)) return "mobile";
+  return "desktop";
+}
+
+function logEvent(eventType, target, meta){
+  if(!supabaseClient || !currentUserId) return;
+  supabaseClient.from("events").insert({
+    user_id: currentUserId,
+    event_type: eventType,
+    target: target || null,
+    meta: meta || null
+  }).then(function(res){ if(res.error) console.error("event log failed:", eventType, res.error); });
+}
+
 function loveButtonLabel(artistName){
   const n = loveCounts[artistName] || 0;
   return "\u2764\ufe0f Love" + (n > 0 ? " (" + n + ")" : "");
@@ -183,7 +203,7 @@ const locations = [
   { venue:"81", lat:51.7220131, lng:-0.338519, days:{ 6:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"},9:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"},13:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"},16:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"},20:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"},23:{"Suzi Clark Artist":"Wed: 11am-1.30pm & 4.30pm-6pm; Sun: 3pm-5.30pm"} } },
   { venue:"82", lat:51.7503251, lng:-0.3403303, days:{ 5:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},6:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},7:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},8:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},9:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},10:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},11:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},12:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},13:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},14:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},15:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},16:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},17:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},18:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},19:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"},20:{"Mella Kelly":"12noon-6pm (Sat/Sun 11am-5pm)"} } },
   { venue:"83", lat:51.755225493287, lng:-0.35177501230315, days:{ 11:{"Dacorum & Chiltern Potters Guild (DCPG)":"10am-5pm"},12:{"Dacorum & Chiltern Potters Guild (DCPG)":"10am-5pm"},13:{"Dacorum & Chiltern Potters Guild (DCPG)":"10am-5pm"} } },
-
+  { venue:"84", lat:51.9745, lng:-0.2325, siteName:"Broadway Gallery", days:{ 5:{"Broadway Gallery":"Details to be confirmed"},6:{"Broadway Gallery":"Details to be confirmed"},7:{"Broadway Gallery":"Details to be confirmed"},8:{"Broadway Gallery":"Details to be confirmed"},9:{"Broadway Gallery":"Details to be confirmed"},10:{"Broadway Gallery":"Details to be confirmed"},11:{"Broadway Gallery":"Details to be confirmed"},12:{"Broadway Gallery":"Details to be confirmed"},13:{"Broadway Gallery":"Details to be confirmed"},14:{"Broadway Gallery":"Details to be confirmed"},15:{"Broadway Gallery":"Details to be confirmed"},16:{"Broadway Gallery":"Details to be confirmed"},17:{"Broadway Gallery":"Details to be confirmed"},18:{"Broadway Gallery":"Details to be confirmed"},19:{"Broadway Gallery":"Details to be confirmed"},20:{"Broadway Gallery":"Details to be confirmed"},21:{"Broadway Gallery":"Details to be confirmed"},22:{"Broadway Gallery":"Details to be confirmed"},23:{"Broadway Gallery":"Details to be confirmed"},24:{"Broadway Gallery":"Details to be confirmed"},25:{"Broadway Gallery":"Details to be confirmed"},26:{"Broadway Gallery":"Details to be confirmed"},27:{"Broadway Gallery":"Details to be confirmed"} } },
 ];
 
 const ARTIST_INFO = {
@@ -232,7 +252,7 @@ const ARTIST_INFO = {
   "Kat Herrgott-Penter": { types:["Drawing","Painting"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/33/Throns-with-Rose-or-Mondrian-Rose.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios/kat-herrgott-penter/" },
   "AnnaSilvia Dooley": { types:["Painting"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/33/IRENE-Portrait-1.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios/annasilvia-dooley/" },
   "sonnie": { types:["Painting"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/33/MG_4627-Waves.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios/sonnie/" },
-  
+  "Broadway Gallery": { types:[], photo:"", profileUrl:"https://www.broadway-gallery.com/" },
   "Carolyn Storey": { types:["Digital Art","Drawing","Mixed Media 2D"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/34/Regency-Melissa-cropped-2026-Carolyn-Storey.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios-group/carolyn-storey/" },
   "Linda-Gail": { types:["Drawing"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/34/20260303_104407.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios-group/linda-gail/" },
   "Pete Greening": { types:["Painting"], photo:"https://www.hvaf.org.uk/wp-content/uploads/formidable/34/PeteGreening_051-of-2025-scaled-to-3k-px.jpg", profileUrl:"https://www.hvaf.org.uk/open-studios-group/pete-greening/" },
@@ -369,7 +389,7 @@ let currentLocations = locations;
 function computeMarkerPixelOffsets(locs){
   const offsets = {};
   const CLUSTER_RADIUS_M = 12; // only treat as "same building" within ~12m
-  const TAP_TARGET_PX = 30; // must match the pin's actual tappable size below
+  const PIXEL_RADIUS = 8;
   function distMeters(a, b){
     const R = 6371000;
     const phi1 = a.lat * Math.PI/180, phi2 = b.lat * Math.PI/180;
@@ -387,12 +407,10 @@ function computeMarkerPixelOffsets(locs){
       if(distMeters(a, b) <= CLUSTER_RADIUS_M) group.push(b);
     });
     if(group.length > 1){
-      // radius chosen so neighbouring tap targets never overlap, however many venues are clustered
-      const radius = TAP_TARGET_PX / (2 * Math.sin(Math.PI / group.length));
       group.forEach(function(g, idx){
         used[g.venue] = true;
         const angle = (2 * Math.PI * idx / group.length) - Math.PI/2;
-        offsets[g.venue] = [Math.cos(angle) * radius, Math.sin(angle) * radius];
+        offsets[g.venue] = [Math.cos(angle) * PIXEL_RADIUS, Math.sin(angle) * PIXEL_RADIUS];
       });
     }
   });
@@ -544,19 +562,26 @@ function startTrail(email){
         { onConflict: "user_id" }
       ).then(function(res){ if(res.error) console.error("welcome email save failed:", res.error); });
     }
+
+    // One session_start event per page load. `src` is read from the URL
+    // (e.g. add ?src=qr to a printed flyer link, ?src=instagram to a social
+    // post) so referrer source can be tracked reliably even when the
+    // browser's own referrer is blank (which is typical for QR scans).
+    const srcParam = new URLSearchParams(window.location.search).get("src");
+    logEvent("session_start", null, {
+      device: detectDevice(),
+      referrer: document.referrer || "",
+      src: srcParam || "",
+      screen_w: window.screen ? window.screen.width : null,
+      screen_h: window.screen ? window.screen.height : null
+    });
   });
 }
 
-let preSearchMapView = null;
 function focusOnVenue(loc, focusArtist){
   activeSelectedVenue = loc.venue;
   renderMap();
-  if(loc.lat && loc.lng && leafletMap){
-    if(!preSearchMapView){
-      preSearchMapView = { center: leafletMap.getCenter(), zoom: leafletMap.getZoom() };
-    }
-    leafletMap.setView([loc.lat, loc.lng], 16, { animate:false });
-  }
+  if(loc.lat && loc.lng && leafletMap) leafletMap.setView([loc.lat, loc.lng], 16, { animate:false });
   openPanel(loc, focusArtist);
 }
 
@@ -661,13 +686,10 @@ function renderSearchResults(){
 
 function openSearchPanel(){
   document.getElementById("searchPanel").classList.add("show");
-  document.getElementById("scrim").classList.add("show");
   renderSearchResults();
 }
 function closeSearchPanel(){
   document.getElementById("searchPanel").classList.remove("show");
-  document.getElementById("scrim").classList.remove("show");
-  if(leafletMap) leafletMap.invalidateSize();
 }
 
 populateTypeDropdown();
@@ -677,11 +699,10 @@ document.getElementById("searchByNameBtn").onclick = function(){
     closeSearchPanel();
   } else {
     openSearchPanel();
-    setTimeout(function(){ document.getElementById("artistSearchInput").focus(); }, 300);
+    document.getElementById("artistSearchInput").focus();
   }
 };
 document.getElementById("artistSearchInput").addEventListener("input", renderSearchResults);
-document.getElementById("searchPanelClose").onclick = closeSearchPanel;
 document.getElementById("artistTypeSelect").addEventListener("change", function(){
   openSearchPanel();
 });
@@ -777,7 +798,7 @@ function shareArtist(artistName, loc){
 
 const ALL_ART_TYPES = Array.from(new Set(Object.values(ARTIST_INFO).flatMap(function(i){ return i.types || []; }))).sort();
 let typeFilter = new Set();
-let statusFilter = "all"; // "open" (open only) | "all" (include closed, default)
+let statusFilter = "open"; // "open" (open only, default) | "all" (include closed)
 
 function ordinalDateLabel(d){
   return ordinal(d) + " September 2026";
@@ -926,6 +947,8 @@ function getDirectionsUrl(lat, lng) {
 }
 
 function openPanel(loc, focusArtist){
+  logEvent("venue_click", loc.venue);
+  if(focusArtist) logEvent("artist_click", focusArtist);
   const body = document.getElementById("panelBody");
   const openToday = loc.days[selectedDate];
   const venueLabel = loc.siteName ? (loc.siteName + " \u00b7 Venue " + loc.venue) : ("Venue " + loc.venue);
@@ -943,10 +966,6 @@ function openPanel(loc, focusArtist){
     artistsToShow = Object.keys(openToday);
   } else {
     artistsToShow = Array.from(allArtistsSet);
-  }
-
-  if(artistsToShow.length > 1){
-    html += "<div class=\"venueArtistCountBanner\">" + artistsToShow.length + " artists at this venue \u2014 scroll to see them all</div>";
   }
 
   artistsToShow.forEach(function(artist){
@@ -1003,7 +1022,6 @@ function openPanel(loc, focusArtist){
     "</div>";
   
   body.innerHTML = html;
-  document.getElementById("panel").scrollTop = 0;
   document.getElementById("panel").classList.add("show");
   document.getElementById("scrim").classList.add("show");
   
@@ -1057,10 +1075,6 @@ function closePanel(){
   activeSelectedVenue = null;
   document.getElementById("panel").classList.remove("show");
   if(!isListPanelOpen) document.getElementById("scrim").classList.remove("show");
-  if(preSearchMapView && leafletMap){
-    leafletMap.setView(preSearchMapView.center, preSearchMapView.zoom, { animate:false });
-    preSearchMapView = null;
-  }
   renderMap();
 }
 document.getElementById("panelClose").onclick = closePanel;
@@ -1248,6 +1262,7 @@ function openListPanel(){
   renderMap(); 
   document.getElementById("listPanel").classList.add("show");
   document.getElementById("scrim").classList.add("show");
+  logEvent("view_toggle", "list");
 }
 function closeListPanel(){
   isListPanelOpen = false;
@@ -1255,90 +1270,6 @@ function closeListPanel(){
   document.getElementById("listPanel").classList.remove("show");
   document.getElementById("scrim").classList.remove("show");
 }
-let galleryScope = "today"; // "today" | "all"
-
-function buildGalleryGrid(){
-  const grid = document.getElementById("galleryGrid");
-  grid.innerHTML = "";
-  const seen = new Set();
-  const tiles = [];
-
-  currentLocations.forEach(function(loc){
-    const openToday = loc.days[selectedDate];
-    let artistsHere;
-    if(galleryScope === "today"){
-      if(!openToday) return;
-      artistsHere = Object.keys(openToday);
-    } else {
-      const allArtists = new Set();
-      Object.values(loc.days).forEach(function(d){ Object.keys(d).forEach(function(n){ allArtists.add(n); }); });
-      artistsHere = Array.from(allArtists);
-    }
-    artistsHere.forEach(function(artist){
-      if(seen.has(artist)) return;
-      const info = ARTIST_INFO[artist] || {};
-      if(typeFilter.size > 0){
-        const t = info.types || [];
-        if(!t.some(function(tt){ return typeFilter.has(tt); })) return;
-      }
-      seen.add(artist);
-      tiles.push({ artist: artist, loc: loc });
-    });
-  });
-
-  if(tiles.length === 0){
-    grid.innerHTML = "<div id=\"galleryEmptyMsg\">No artists match right now.</div>";
-    return;
-  }
-
-  tiles.sort(function(a,b){ return a.artist.localeCompare(b.artist); });
-
-  tiles.forEach(function(t){
-    const info = ARTIST_INFO[t.artist] || {};
-    const tile = document.createElement("div");
-    tile.className = "galleryTile";
-    const photoHtml = info.photo
-      ? ("<img src=\"" + info.photo + "\" class=\"galleryTilePhoto\" alt=\"\" loading=\"lazy\" " +
-         "data-fallback-bg=\"" + avatarColorForName(t.artist) + "\" data-fallback-text=\"" + getInitials(t.artist) + "\" " +
-         "onerror=\"avatarImgError(this)\">")
-      : ("<div class=\"galleryTilePhoto\" style=\"background:" + avatarColorForName(t.artist) + ";\">" + getInitials(t.artist) + "</div>");
-    tile.innerHTML = photoHtml +
-      "<div class=\"galleryTileCaption\">" +
-        "<span class=\"galleryTileName\">" + t.artist + "</span>" +
-        "<span class=\"galleryTileVenue\">Venue " + t.loc.venue + "</span>" +
-      "</div>";
-    tile.onclick = function(){
-      closeGalleryPanel();
-      handlePinTap(t.loc, t.artist);
-    };
-    grid.appendChild(tile);
-  });
-}
-
-function openGalleryPanel(){
-  buildGalleryGrid();
-  document.getElementById("galleryPanel").classList.add("show");
-  document.getElementById("scrim").classList.add("show");
-}
-function closeGalleryPanel(){
-  document.getElementById("galleryPanel").classList.remove("show");
-  document.getElementById("scrim").classList.remove("show");
-}
-document.getElementById("galleryToggle").onclick = openGalleryPanel;
-document.getElementById("galleryClose").onclick = closeGalleryPanel;
-document.getElementById("galleryScopeToday").onclick = function(){
-  galleryScope = "today";
-  document.getElementById("galleryScopeToday").classList.add("active");
-  document.getElementById("galleryScopeAll").classList.remove("active");
-  buildGalleryGrid();
-};
-document.getElementById("galleryScopeAll").onclick = function(){
-  galleryScope = "all";
-  document.getElementById("galleryScopeAll").classList.add("active");
-  document.getElementById("galleryScopeToday").classList.remove("active");
-  buildGalleryGrid();
-};
-
 document.getElementById("listToggle").onclick = openListPanel;
 document.getElementById("dateSummaryBtn").onclick = function(){ buildDateSheet(); openSheet("dateSheet"); };
 document.getElementById("artTypeFilterBtn").onclick = function(){ buildTypeSheet(); openSheet("typeSheet"); };
@@ -1349,7 +1280,6 @@ document.getElementById("closedToggleBtn").onclick = function(){
   if(isListPanelOpen) buildListView();
 };
 document.getElementById("myTrailBtn").onclick = function(){ buildTrailSheet(); openSheet("trailSheet"); };
-document.getElementById("trailSheetClose").onclick = closeAllSheets;
 document.getElementById("resetFiltersBtn").onclick = function(){
   typeFilter.clear();
   statusFilter = "open";
@@ -1364,7 +1294,7 @@ document.getElementById("typeSheetDone").onclick = function(){
   closeAllSheets();
 };
 document.getElementById("listClose").onclick = closeListPanel;
-document.getElementById("scrim").onclick = function(){ closePanel(); closeListPanel(); closeAllSheets(); closeSearchPanel(); };
+document.getElementById("scrim").onclick = function(){ closePanel(); closeListPanel(); closeAllSheets(); };
 
 function renderMap(){
   if(!currentLocations || !leafletMap || !markersLayer) return;
@@ -1391,22 +1321,16 @@ function renderMap(){
     const isPicked = (activeSelectedVenue === loc.venue);
     const isVisited = visitedVenues.includes(loc.venue);
 
-    const venueArtists = new Set();
-    Object.values(loc.days).forEach(function(d){ Object.keys(d).forEach(function(n){ venueArtists.add(n); }); });
-    const isSaved = Array.from(venueArtists).some(function(a){ return !!lovedStudios[a]; });
-
     let stateClass = openToday ? "open" : "closed";
-    if(isVisited && isSaved) stateClass = "visitedSaved";
-    else if(isVisited) stateClass = "visitedState";
-    else if(isSaved) stateClass = "saved";
+    if(isVisited) stateClass = "visitedState";
 
     const icon = L.divIcon({
       className: "",
-      html: "<div class=\"pinTapArea\"><div class=\"pin " + stateClass + (isPicked ? " picked" : "") + "\">" + (isVisited ? "\u2713" : loc.venue) + "</div></div>",
-      iconSize: [30, 30],
+      html: "<div class=\"pin " + stateClass + (isPicked ? " picked" : "") + "\">" + (isVisited ? "\u2713" : loc.venue) + "</div>",
+      iconSize: [15, 15],
       iconAnchor: (function(){
         const off = markerPixelOffsets[loc.venue];
-        return off ? [15 - off[0], 15 - off[1]] : [15, 15];
+        return off ? [7.5 - off[0], 7.5 - off[1]] : [7.5, 7.5];
       })()
     });
 
