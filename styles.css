@@ -304,6 +304,7 @@ html,body{margin:0;padding:0;min-height:100%;font-family:"Helvetica Neue",Helvet
     #searchPanel {padding: 24px 32px 32px; max-width: 700px;}
     #galleryPanel {padding: 24px 32px 32px; max-width: 1000px;}
     #galleryGrid {grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));}
-    
+    .dateTapHint {font-size:10px;color:#666;font-weight:600;display:block;margin-bottom:2px;}
+
     .sheetPanel {padding: 24px 32px 32px; max-width: 700px;}
   }
